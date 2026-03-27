@@ -3,6 +3,8 @@
 #include "device_launch_parameters.h"
 #include <cstdio>
 #include <cstdlib>
+#include <cstring>
+#include <random>
 
 using namespace std;
 
@@ -18,23 +20,25 @@ public:
 	float* data = nullptr;
 	float* dev_data = nullptr; //for GPU tensors
 
+
 	static bool canMultiply(Tensor a, Tensor b) {
 		return a.dimensions[a.ndim - 1] == b.dimensions[0];
 	}
 
 	static Tensor multiply21(Tensor a, Tensor b) {
 		//Assuming it's 2d*1D (a*b)
-		
+
 		Tensor result(b.dimensions);
-		for(int i=0;i<a.dimensions[0];i++){
-			result.data[i]=0;
-			for(int j=0;j<a.dimensions[1];j++){
-				result.data[i]+=a.data[i*a.strides[0]+j*a.strides[1]]*b.data[j*b.strides[0]];
+		for (int i = 0; i < a.dimensions[0]; i++) {
+			result.data[i] = 0;
+			for (int j = 0; j < a.dimensions[1]; j++) {
+				result.data[i] += a.data[i * a.strides[0] + j * a.strides[1]] * b.data[j * b.strides[0]];
 			}
 		}
 		return result;
 
 	}
+
 
 	static Tensor add(Tensor a, Tensor b) {
 		//Assuming it's 1D+1D (a+b)
@@ -44,6 +48,7 @@ public:
 		}
 		return result;
 	}
+
 
 	Tensor(int dimensions[]) {
 		this->ndim = int(sizeof(dimensions) / sizeof(dimensions[0]));
@@ -57,9 +62,9 @@ public:
 
 		cudaMallocHost(&data, nbEle * sizeof(float));
 		cudaMalloc(&dev_data, nbEle * sizeof(float));
-
-
 	}
+
+
 	Tensor(float dataT[]) {
 		this->ndim = 1;
 		this->dimensions = new int[1];
@@ -111,3 +116,4 @@ Tensor relu(Tensor input) {
 	}
 	return result;
 }
+

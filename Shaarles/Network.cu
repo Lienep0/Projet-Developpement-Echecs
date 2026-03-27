@@ -1,5 +1,6 @@
 #pragma once
-#include "Layer.h"
+#include "Layer.cu"
+#include <cstring>
 
 
 class Network
@@ -21,10 +22,18 @@ public:
 
 	void forward(float entry[]) {
 		Tensor entryTensor(entry);
-		for(int i = 0; i < nbLayers; i++) {
-			entryTensor=this->layers[i].forward(entryTensor);
+		for (int i = 0; i < nbLayers; i++) {
+			entryTensor = this->layers[i].forward(entryTensor);
 		}
-		
+
 	}
+	void forwardh(float entry[]) {
+		Tensor entryTensor(entry);
+		for (int i = 0; i < nbLayers; i++) {
+			layers[i].forwardh(entryTensor, entryTensor);
+		}
+
+	}
+
 
 };
