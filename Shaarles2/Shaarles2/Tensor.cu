@@ -161,5 +161,8 @@ Tensor relu(Tensor input) {
 	return result;
 }
 
+__global__ void relud(Tensor input) {
+	input.dev_data[threadIdx.x] = max(0.0f, input.dev_data[threadIdx.x]);
+}
 
 
