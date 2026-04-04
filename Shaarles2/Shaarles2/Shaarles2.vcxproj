@@ -11,11 +11,14 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="Layer.cu" />
+    <ClCompile Include="Linear.cu" />
     <ClCompile Include="main.cu" />
     <ClCompile Include="Network.cu" />
   </ItemGroup>
   <ItemGroup>
+    <CudaCompile Include="BatchNorm.cu" />
+    <CudaCompile Include="Conv2D.cu" />
+    <CudaCompile Include="Layer.cu" />
     <CudaCompile Include="Tensor.cu" />
   </ItemGroup>
   <PropertyGroup Label="Globals">

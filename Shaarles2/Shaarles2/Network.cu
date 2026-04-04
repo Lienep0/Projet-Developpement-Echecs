@@ -1,5 +1,5 @@
 #pragma once
-#include "Layer.cu"
+#include "Linear.cu"
 #include <cstring>
 #include <iostream>
 
@@ -8,7 +8,7 @@ class Network
 {
 private:
 	int* dimensions;
-	Layer* layers;
+	Linear* layers;
 	int nbLayers;
 
 public:
@@ -16,9 +16,9 @@ public:
 		this->dimensions = dimensions;
 		this->nbLayers = ndim-1;
 		cout << nbLayers << endl;
-		this->layers = new Layer[nbLayers];
+		this->layers = new Linear[nbLayers];
 		for (int i = 0; i < nbLayers; i++) {
-			this->layers[i] = Layer(dimensions[i], dimensions[i + 1]);
+			this->layers[i] = Linear(dimensions[i], dimensions[i + 1]);
 		}
 	}
 
@@ -37,14 +37,14 @@ public:
 		cout << "starting to forward the data through the layers, we will use the same tensor for input and output to save memory" << endl;
 
 		Tensor outputTensor(layers[0].bias.dimensions, layers[0].bias.ndim);
-		layers[0].forwardh(entryTensor, outputTensor);
+		layers[0].forwardd(entryTensor, outputTensor);
 		entryTensor = outputTensor;
 
 		for (int i = 1; i < nbLayers; i++) {
 			cout << "new output tensor with dimensions: [" << layers[i].bias.dimensions[0] << "] and data: " << layers[i].bias.data[0] << endl;
 			outputTensor = Tensor(layers[i].bias.dimensions, layers[i].bias.ndim);
 			cout << "Forwarding through layer " << i << " with input dimensions: [" << entryTensor.dimensions[0] << "] and output dimensions: [" << outputTensor.dimensions[0] << "]" << endl;
-			layers[i].forwardh(entryTensor, outputTensor);
+			layers[i].forwardd(entryTensor, outputTensor);
 			entryTensor = outputTensor;
 		}
 

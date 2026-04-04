@@ -26,31 +26,21 @@ public:
 		return a.dimensions[a.ndim - 1] == b.dimensions[0];
 	}
 
-	static Tensor multiply21(Tensor a, Tensor b) {
-		//Assuming it's 2d*1D (a*b)
-		cout << "b.dimensions[0]: " << b.dimensions[0] << " ndim: " << b.ndim << endl;
-		Tensor result(b.dimensions, b.ndim);
-		cout << "Multiplying 2D and 1D tensors "<< endl;
-		for (int i = 0; i < b.dimensions[0]; i++) {
-			cout << "Calculating result.data[" << i << "]" << endl;
-			result.data[i] = 0;
-			cout << "result.data[" << i << "] = 0.0f" << endl;
-			for (int j = 0; j < a.dimensions[1]; j++) {
-				result.data[i] += a.data[i * a.strides[0] + j * a.strides[1]] * b.data[j * b.strides[0]];
-				cout << "result.data[" << i << "] += a.data[" << i * a.strides[0] + j * a.strides[1] << "] * b.data[" << j * b.strides[0] << "]" << endl;
-			}
-		}
-		return result;
-
-	}
 
 
-	static Tensor add(Tensor a, Tensor b) {
+	static Tensor add(float* a, float* b, int n) {
 		//Assuming it's 1D+1D (a+b)
-		Tensor result(a.dimensions, a.ndim);
-		for (int i = 0; i < a.dimensions[0]; i++) {
-			result.data[i] = a.data[i * a.strides[0]] + b.data[i * b.strides[0]];
+		float* resultData=nullptr;
+		cudaError_t err = cudaMallocHost(&resultData, n * sizeof(float));
+		if (err != cudaSuccess) {
+			std::cerr << "cudaMallocHost failed: " << cudaGetErrorString(err) << std::endl;
+			resultData = nullptr;
 		}
+		for (int i = 0; i < n; i++) {
+			resultData[i] = a[i] + b[i];
+		}
+		Tensor result(resultData, n);
+		cudaFreeHost(resultData);
 		return result;
 	}
 
@@ -153,16 +143,23 @@ public:
 
 };
 
-Tensor relu(Tensor input) {
-	Tensor result(input.dimensions, input.ndim);
-	for (int i = 0; i < input.dimensions[0]; i++) {
-		result.data[i] = max(0.0f, input.data[i * input.strides[0]]);
+
+
+Tensor multiply21(Tensor a, Tensor b) {
+	//Assuming it's 2d*1D (a*b)
+	cout << "b.dimensions[0]: " << b.dimensions[0] << " ndim: " << b.ndim << endl;
+	Tensor result(b.dimensions, b.ndim);
+	cout << "Multiplying 2D and 1D tensors " << endl;
+	for (int i = 0; i < b.dimensions[0]; i++) {
+		cout << "Calculating result.data[" << i << "]" << endl;
+		result.data[i] = 0;
+		cout << "result.data[" << i << "] = 0.0f" << endl;
+		for (int j = 0; j < a.dimensions[1]; j++) {
+			result.data[i] += a.data[i * a.strides[0] + j * a.strides[1]] * b.data[j * b.strides[0]];
+			cout << "result.data[" << i << "] += a.data[" << i * a.strides[0] + j * a.strides[1] << "] * b.data[" << j * b.strides[0] << "]" << endl;
+		}
 	}
 	return result;
-}
 
-__global__ void relud(Tensor input) {
-	input.dev_data[threadIdx.x] = max(0.0f, input.dev_data[threadIdx.x]);
 }
-
 
