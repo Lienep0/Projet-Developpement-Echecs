@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="Debug|x64">
@@ -11,14 +11,18 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="GeLU.cu" />
     <ClCompile Include="Linear.cu" />
     <ClCompile Include="main.cu" />
+    <ClCompile Include="Module.cu" />
     <ClCompile Include="Network.cu" />
+    <ClCompile Include="SoftMax.cu" />
   </ItemGroup>
   <ItemGroup>
-    <CudaCompile Include="BatchNorm.cu" />
+    <CudaCompile Include="BatchNorm2D.cu" />
     <CudaCompile Include="Conv2D.cu" />
     <CudaCompile Include="Layer.cu" />
+    <CudaCompile Include="ReLU.cu" />
     <CudaCompile Include="Tensor.cu" />
   </ItemGroup>
   <PropertyGroup Label="Globals">

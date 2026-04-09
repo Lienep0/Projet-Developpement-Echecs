@@ -1,5 +1,8 @@
 #pragma once
 #include "Linear.cu"
+#include "Conv2D.cu"
+#include "BatchNorm2D.cu"
+#include "GeLU.cu"
 #include <cstring>
 #include <iostream>
 

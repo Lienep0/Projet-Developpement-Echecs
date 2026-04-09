@@ -7,7 +7,7 @@
 
 using namespace std;
 
-__global__ void multiply21d(Tensor a, Tensor b, Tensor result) {
+__global__ void multiply21d(Tensor& a, Tensor& b, Tensor& result) {
 	//Assuming it's 2d*1D (a*b)
 	printf("beginning to multiply 2D and 1D tensors in kernel with thread %d\n", threadIdx.x);
 	result.dev_data[threadIdx.x] = 0;
@@ -26,9 +26,6 @@ __global__ void addd(Tensor a, Tensor b, Tensor result) {
 class Linear {
 	private:
 	Tensor weights;
-
-	function<Tensor(Tensor)> activation = relu;
-	function<void(float* )> activationd = relud;
 public:
 
 	Tensor bias;
@@ -55,13 +52,6 @@ public:
 		//The tensors will be automatically freed when the layer is destroyed
 	}
 
-	Tensor forward(Tensor input) {
-		Tensor output = multiply21(weights, input);
-		cout << "Input: " << endl;
-		output = Tensor::add(output.data, bias.data, sizeof(bias.data)/sizeof(float));
-		cout << "Output before activation: " << endl;
-		return activation(output);
-	}
 
 
 	void forwardd(Tensor input, Tensor output) {
@@ -70,13 +60,10 @@ public:
 		cout << bias.dimensions[0] << " " << bias.ndim << endl;
 		Tensor result(output.dimensions, output.ndim);
 		cout << "Launching kernel with " << this->weights.dimensions[0] << " threads" << endl;
-		multiply21d<<<1, bias.dimensions[0] >> > (weights, input, result);
+		multiply21d<<<1, bias.dimensions[0] >> > (&weights, &input, &result);
 		cudaDeviceSynchronize();
 		cout << "Finished multiplying, now adding bias" << endl;
 		addd<<<1, bias.dimensions[0] >>> (result, this->bias, output);
-		cudaDeviceSynchronize();
-		cout << "Finished adding bias, now applying activation function" << endl;
-		relud << <1, bias.dimensions[0] >> > (output.dev_data);
 		cudaDeviceSynchronize();
 	}
 
