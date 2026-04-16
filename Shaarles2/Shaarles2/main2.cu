@@ -5,11 +5,11 @@
 
 int main() {
 	// Example usage of the ReLU module
-	int dimensions[] = { 4, 4 }; // Example dimensions for a 4x4 tensor
+	int dimensions[] = { 4, 4 ,2}; // Example dimensions for a 4x4 tensor
 	Tensor input(dimensions, 2); // Create an input tensor with the specified dimensions
 	Tensor output(dimensions,2); // Create an output tensor to hold the results
 	// Fill the input tensor with some values (for testing)
-	for (int i = 0; i < 16; i++) {
+	for (int i = 0; i < 32; i++) {
 		input.data[i] = static_cast<float>(i - 8); // Values from -8 to 7
 		printf("element %d: %f\n", i, input.data[i]);
 	}
@@ -18,7 +18,7 @@ int main() {
 	output=reluModule.forward(input); // Perform the forward pass
 	// Print the output tensor values
 	printf("Output after ReLU activation:\n");
-	for (int i = 0; i < 16; i++) {
+	for (int i = 0; i < 32; i++) {
 		printf("element %d: ", i);
 		printf("%f ", output.data[i]);
 		if ((i + 1) % 4 == 0) {
@@ -28,7 +28,7 @@ int main() {
 	
 	printf("Mask values after forward pass:\n");
 	Tensor mask_relu = reluModule.getMask(); // Get the mask tensor from the ReLU module
-	for (int i = 0; i < 16; i++) {
+	for (int i = 0; i < 32; i++) {
 		printf("element %d: ", i);
 		printf("%f ", mask_relu.data[i]);
 		if ((i + 1) % 4 == 0) {

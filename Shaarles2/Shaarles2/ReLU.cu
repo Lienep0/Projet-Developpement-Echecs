@@ -13,6 +13,7 @@ __global__ void reluForwardKernel(float* input, float* output, float* mask, int 
 		if (value > 0) {
 			output[idx] = value;
 			mask[idx] = 1.0f; // Mark as active
+			
 		}
 		else {
 			output[idx] = 0.0f;
@@ -33,6 +34,7 @@ __global__ void reluBackwardKernel(float* gradOutput, float* mask, float* gradIn
 class ReLU : public Module {
 private:
 	Tensor mask; //sert à stocker les mask pour la rétropagation
+
 public:
 
 
@@ -41,7 +43,7 @@ public:
 		// This is a placeholder implement ation
 		Tensor output(input.dimensions, input.ndim); // Create an output tensor with the same dimensions as input
 
-		this->mask = Tensor(input.dimensions, input.ndim); // Create a mask tensor with the same dimensions as input
+		new (&mask) Tensor(input.dimensions, input.ndim); // Create a mask tensor with the same dimensions as input
 		int vec_size = 1;
 		for (int i = 0; i < input.ndim; i++) {
 			vec_size = vec_size * input.dimensions[i];
