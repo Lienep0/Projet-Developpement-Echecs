@@ -11,6 +11,11 @@ public class King extends Piece {
     }
 
     @Override
+    public Piece copy() {
+        return new King(this.getColor());
+    }
+
+    @Override
     protected boolean isPieceMove(Move move, Board board) {
         if (isCastling(move, board)) return true;
         if (Math.abs(move.dx()) > 1 || Math.abs(move.dy()) > 1) return false;

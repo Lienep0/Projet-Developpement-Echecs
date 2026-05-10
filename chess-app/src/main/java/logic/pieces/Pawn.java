@@ -12,13 +12,18 @@ public class Pawn extends Piece {
     }
 
     @Override
+    public Piece copy() {
+        return new Pawn(this.getColor());
+    }
+
+    @Override
     protected boolean isPieceMove(Move move, Board board) {
 
         int dx = move.dx();
         int dy = move.dy();
         int dir = (color == WHITE) ? -1 : 1;
         int startRow = (color == WHITE) ? 6 : 1;
-        Piece target = board.getPieceAt(move.end.x, move.end.y);
+        Piece target = board.getPieceAt(move.end);
 
         // Cas tout droit
         if (dx == 0) {
@@ -27,7 +32,8 @@ public class Pawn extends Piece {
 
             // Cas où on avance de 2
             if (move.start.y == startRow && dy == 2 * dir) {
-                return board.getPieceAt(move.start.x, move.start.y + dir) == null; // La case intermédiaire doit être vide
+                Position mid = new Position(move.start.x, move.start.y + dir);
+                return board.getPieceAt(mid) == null; // La case intermédiaire doit être vide
             }
         }
 
@@ -42,7 +48,7 @@ public class Pawn extends Piece {
 
     private boolean isEnPassant(Move move, Board board) {
         Move lastMove = board.getLastMove();
-        if (lastMove != null && board.getPieceAt(lastMove.end.x, lastMove.end.y) instanceof Pawn && Math.abs(lastMove.dy()) == 2) {
+        if (lastMove != null && board.getPieceAt(lastMove.end) instanceof Pawn && Math.abs(lastMove.dy()) == 2) {
             if (
                     (color == WHITE && move.end.y == lastMove.end.y-1 && move.end.x == lastMove.end.x)
                 || (color == BLACK && move.end.y == lastMove.end.y+1 && move.end.x == lastMove.end.x)

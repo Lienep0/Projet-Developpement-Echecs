@@ -9,6 +9,11 @@ public class Bishop extends Piece {
     }
 
     @Override
+    public Piece copy() {
+        return new Bishop(this.getColor());
+    }
+
+    @Override
     protected boolean isPieceMove(Move move, Board board) {
 
         // Déplacement diagonal

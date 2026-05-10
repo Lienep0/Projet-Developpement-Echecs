@@ -8,16 +8,19 @@ package logic.game;
 public class MoveResult {
 
     public final boolean success;
-    public  final Board board;
+    public final String errorCode;
+    public final Board board;
     public final Color currentPlayer;
     public final Color winner; // null si le jeu n'est pas fini
 
     public MoveResult(boolean success,
+               String errorCode,
                Board board,
                Color currentPlayer,
                Color winner
     ) {
         this.success = success;
+        this.errorCode = errorCode;
         this.board = board;
         this.currentPlayer = currentPlayer;
         this.winner = winner;

@@ -21,6 +21,8 @@ public abstract class Piece {
         this.hasMoved = false;
     }
 
+    public abstract Piece copy();
+
     public Color getColor() {
         return color;
     }
@@ -44,7 +46,7 @@ public abstract class Piece {
         if (move.dx() == 0 && move.dy() == 0) return false;
 
         // Arrivée pas déjà occupée par la même couleur
-        Piece target = board.getPieceAt(move.end.x, move.end.y);
+        Piece target = board.getPieceAt(move.end);
         if (target != null && target.color == color) return false;
 
         // Mode de déplacement de la pièce respecté
