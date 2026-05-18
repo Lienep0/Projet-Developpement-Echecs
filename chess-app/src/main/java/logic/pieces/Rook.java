@@ -9,6 +9,11 @@ public class Rook extends Piece {
     }
 
     @Override
+    public Piece copy() {
+        return new Rook(this.getColor());
+    }
+
+    @Override
     protected boolean isPieceMove(Move move, Board board) {
 
         // Déplacement horizontal ou vertical

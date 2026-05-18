@@ -22,29 +22,6 @@ public:
 	float* dev_data = nullptr; //for GPU tensors
 
 
-	static bool canMultiply(Tensor a, Tensor b) {
-		return a.dimensions[a.ndim - 1] == b.dimensions[0];
-	}
-
-
-
-	static Tensor add(float* a, float* b, int n) {
-		//Assuming it's 1D+1D (a+b)
-		float* resultData=nullptr;
-		cudaError_t err = cudaMallocHost(&resultData, n * sizeof(float));
-		if (err != cudaSuccess) {
-			std::cerr << "cudaMallocHost failed: " << cudaGetErrorString(err) << std::endl;
-			resultData = nullptr;
-		}
-		for (int i = 0; i < n; i++) {
-			resultData[i] = a[i] + b[i];
-		}
-		Tensor result(resultData, n);
-		cudaFreeHost(resultData);
-		return result;
-	}
-
-
 	Tensor(int dimensions[], int ndim) {
 
 		cout << "Incoming dims: ";
@@ -66,6 +43,8 @@ public:
 			nbEle *= dimensions[i];
 		}
 		cout << "nbEle: " << nbEle << endl;
+
+
 		cudaError_t err = cudaMallocHost(&data, nbEle * sizeof(float));
 		if (err != cudaSuccess) {
 			std::cerr << "cudaMallocHost failed: " << cudaGetErrorString(err) << std::endl;
@@ -133,6 +112,29 @@ public:
 		cudaFreeHost(data);
 		cudaFree(dev_data);
 	}
+	static bool canMultiply(Tensor a, Tensor b) {
+		return a.dimensions[a.ndim - 1] == b.dimensions[0];
+	}
+
+
+
+	static Tensor add(float* a, float* b, int n) {
+		//Assuming it's 1D+1D (a+b)
+		float* resultData=nullptr;
+		cudaError_t err = cudaMallocHost(&resultData, n * sizeof(float));
+		if (err != cudaSuccess) {
+			std::cerr << "cudaMallocHost failed: " << cudaGetErrorString(err) << std::endl;
+			resultData = nullptr;
+		}
+		for (int i = 0; i < n; i++) {
+			resultData[i] = a[i] + b[i];
+		}
+		Tensor result(resultData, n);
+		cudaFreeHost(resultData);
+		return result;
+	}
+
+
 
 	void toString() {
 		printf("Tensor with %d dimensions\n", ndim);

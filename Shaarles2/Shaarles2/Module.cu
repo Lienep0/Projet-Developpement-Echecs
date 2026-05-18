@@ -13,7 +13,7 @@ public:
 	virtual Tensor forward(Tensor input) {
 		// Implement the forward pass using the weights and bias
 		// This is a placeholder implementation
-		Tensor output; // Compute the output based on input, weights, and bias
+		return Tensor();
 	}
 
 	virtual void forwardd(Tensor input) {
@@ -32,6 +32,7 @@ public:
 	virtual vector<Tensor*> parameters() {
 		// Return the parameters of the module (weights and bias)
 		// This is a placeholder implementation
+		return vector<Tensor*>();
 	}
 
 };
