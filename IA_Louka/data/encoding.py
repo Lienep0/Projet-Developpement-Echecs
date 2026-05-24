@@ -23,6 +23,8 @@ def update_value_head(game, board):
         value = value[::-1].copy()
     return value 
 
+
+#------------------------------------------------------------------------------------
 def encode_pieces(board, entry, flip):
     
     piece_types = [
@@ -125,19 +127,12 @@ def update_policy_head(move, board):
         diff_row = to_row - from_row
         diff_col = to_col - from_col
 
-
-
-    if move.promotion :
-            if move.promotion == chess.QUEEN:
-                plan_idx = 0 
-                policy[plan_idx, from_row, from_col] = 1.0
-                return policy
-            else:
-                direction = diff_col + 1 
-                piece_type = {chess.KNIGHT: 0, chess.BISHOP: 1, chess.ROOK: 2}[move.promotion]
-                plan_idx = 64 + (3 * piece_type) + direction
-                policy[plan_idx, from_row, from_col] = 1.0
-                return policy
+    if move.promotion and move.promotion != chess.QUEEN:
+        direction = diff_col + 1 
+        piece_type = {chess.KNIGHT: 0, chess.BISHOP: 1, chess.ROOK: 2}[move.promotion]
+        plan_idx = 64 + (3 * piece_type) + direction
+        policy[plan_idx, from_row, from_col] = 1.0
+        return policy
 
     knight_moves = [
         (2, 1), (1, 2), (-1, 2), (-2, 1),
@@ -160,13 +155,13 @@ def update_policy_head(move, board):
             return policy
 
     return policy
-
+#------------------------------------------------------------------------------------
 
 def create_hdf5_file(h5_path):
     with h5py.File(h5_path, 'w') as f:
-        f.create_dataset("entry", shape=(0, 24, 8, 8), maxshape=(None, 24, 8, 8), chunks=(1000, 24, 8, 8), dtype='f4')
-        f.create_dataset("policy_head", shape=(0, 73, 8, 8), maxshape=(None, 73, 8, 8), chunks=(1000, 73, 8, 8), dtype='f4')
-        f.create_dataset("value_head", shape=(0, 3), maxshape=(None, 3), chunks=(1000, 3), dtype='f4')
+        f.create_dataset("entry", shape=(0, 24, 8, 8), maxshape=(None, 24, 8, 8),  dtype='f4')
+        f.create_dataset("policy_head", shape=(0, 73, 8, 8), maxshape=(None, 73, 8, 8), dtype='f4')
+        f.create_dataset("value_head", shape=(0, 3), maxshape=(None, 3), dtype='f4')
 
 
 def write_encode(h5_file,PgnFile,index):
