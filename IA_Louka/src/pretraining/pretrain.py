@@ -46,5 +46,5 @@ if __name__ == "__main__":
         value_heads = torch.from_numpy(f["value_head"][:]).float()
 
     dataset = TensorDataset(entries,policy_heads,value_heads)
-    dataloaded = DataLoader(dataset, batch_size=512, shuffle=True)
+    dataloaded = DataLoader(dataset, batch_size=4096, shuffle=True)
     train(dataloaded,device,AI_path,1)
