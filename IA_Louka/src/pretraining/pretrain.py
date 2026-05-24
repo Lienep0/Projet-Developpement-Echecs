@@ -20,6 +20,7 @@ def train(dataloaded,device,AI_path,epochs):
     optimizer = optim.Adam(model.parameters(), lr=0.01)
     model.train()
     for epoch in range(epochs):
+        total_loss=0.0
         for entry,policy_head,value_head in dataloaded:
             entry = entry.to(device)
             policy_head = policy_head.to(device)
@@ -29,10 +30,13 @@ def train(dataloaded,device,AI_path,epochs):
             loss1 = lossfn1(prediction_policy, policy_head)
             loss2 = lossfn2(prediction_value, value_head)
             loss = loss1 + loss2
+            total_loss += loss.item()
             loss.backward()
             optimizer.step()
+        epoch_loss = total_loss/len(dataloaded)
+        print(f"total loss : {epoch_loss}")
         torch.save(model.state_dict(), AI_path)
-        print(f'epoch numero :{epoch+1}')
+        print(f'epoch numero : {epoch+1}')
 
 if __name__ == "__main__":
     dirname = os.path.dirname(__file__)
@@ -46,5 +50,5 @@ if __name__ == "__main__":
         value_heads = torch.from_numpy(f["value_head"][:]).float()
 
     dataset = TensorDataset(entries,policy_heads,value_heads)
-    dataloaded = DataLoader(dataset, batch_size=4096, shuffle=True)
-    train(dataloaded,device,AI_path,1)
+    dataloaded = DataLoader(dataset, batch_size=2048, shuffle=True)
+    train(dataloaded,device,AI_path,10)
