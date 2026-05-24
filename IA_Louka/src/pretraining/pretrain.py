@@ -14,6 +14,7 @@ from torch.utils.data import TensorDataset, DataLoader
 
 def train(dataloaded,device,AI_path,epochs):
     model= AI().to(device)
+    model.load_state_dict(torch.load(AI_path,map_location=device)) 
     lossfn1 = nn.CrossEntropyLoss()
     lossfn2 = nn.MSELoss()
     optimizer = optim.Adam(model.parameters(), lr=0.01)
@@ -35,8 +36,8 @@ def train(dataloaded,device,AI_path,epochs):
 
 if __name__ == "__main__":
     dirname = os.path.dirname(__file__)
-    h5_path = os.path.join(dirname,'..','data','pretrain_moves_dataset.h5')
-    AI_path = os.path.join(dirname, '..','pretrained_model', 'AI_weights.pth')
+    h5_path = os.path.join(dirname,'..','..','data','pretrain_moves_dataset.h5')
+    AI_path = os.path.join(dirname, '..','..','pretrained_model', 'AI_weights.pth')
     device = torch.device("cuda" if torch.cuda.is_available() else "mps" if torch.backends.mps.is_available() else "cpu")
 
     with h5py.File(h5_path, "r") as f:
