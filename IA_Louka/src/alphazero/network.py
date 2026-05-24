@@ -2,7 +2,7 @@ from torch import nn
 
 epochs = 10000
 
-class IA(nn.Module):
+class AI(nn.Module):
     def __init__(self, num=19):
         super().__init__()
         self.gelu = nn.GELU()

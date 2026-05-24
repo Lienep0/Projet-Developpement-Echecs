@@ -1,6 +1,6 @@
 import os
 import h5py
-from alphazero.network import IA
+from alphazero.network import AI
 
 
 from torch import nn,optim
@@ -32,7 +32,7 @@ def train(dataloaded,device,AI_path,epochs):
 if __name__ == "__main__":
     dirname = os.path.dirname(__file__)
     h5_path = os.path.join(dirname, '..', 'data/pretrain_moves_dataset.h5')
-    AI_path = os.path.join(dirname, '..', 'src/AI_weights.pth')
+    AI_path = os.path.join(dirname, '..', 'data/pretrained_model/AI_weights.pth')
     device = torch.device("cuda" if torch.cuda.is_available() else "mps" if torch.backends.mps.is_available() else "cpu")
 
     with h5py.File(h5_path, "r") as f:
