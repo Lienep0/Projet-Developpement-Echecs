@@ -1,5 +1,9 @@
 import os
 import h5py
+import sys
+
+sys.path.append("..")
+
 from alphazero.network import AI
 
 
@@ -9,7 +13,7 @@ from torch.utils.data import TensorDataset, DataLoader
 
 
 def train(dataloaded,device,AI_path,epochs):
-    model= IA().to(device)
+    model= AI().to(device)
     lossfn1 = nn.CrossEntropyLoss()
     lossfn2 = nn.MSELoss()
     optimizer = optim.Adam(model.parameters(), lr=0.01)
@@ -27,12 +31,12 @@ def train(dataloaded,device,AI_path,epochs):
             loss.backward()
             optimizer.step()
         torch.save(model.state_dict(), AI_path)
-        print(f'epoch numero :{epoch}')
+        print(f'epoch numero :{epoch+1}')
 
 if __name__ == "__main__":
     dirname = os.path.dirname(__file__)
-    h5_path = os.path.join(dirname, '..', 'data/pretrain_moves_dataset.h5')
-    AI_path = os.path.join(dirname, '..', 'data/pretrained_model/AI_weights.pth')
+    h5_path = os.path.join(dirname,'..','data','pretrain_moves_dataset.h5')
+    AI_path = os.path.join(dirname, '..','pretrained_model', 'AI_weights.pth')
     device = torch.device("cuda" if torch.cuda.is_available() else "mps" if torch.backends.mps.is_available() else "cpu")
 
     with h5py.File(h5_path, "r") as f:
