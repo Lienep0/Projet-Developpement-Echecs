@@ -91,12 +91,21 @@ public class GameEngine {
         );
         if (!opponentCanMove) {
             if (opponentInCheck) {
+            	this.board = newBoard;
+            	this.currentPlayer = opponent;
+            	System.out.println("checkmate");
                 return new MoveResult(true, "checkmate", newBoard, opponent, currentPlayer);
             } else {
+            	this.board = newBoard;
+            	this.currentPlayer = opponent;
+            	System.out.println("stalemate");
                 return new MoveResult(true, "stalemate", newBoard, opponent, currentPlayer);
             }
         }
         if (opponentInCheck) {
+        	this.board = newBoard;
+        	this.currentPlayer = opponent;
+        	System.out.println("check");
             return new MoveResult(true, "check", newBoard, opponent, null);
         }
 
@@ -104,6 +113,7 @@ public class GameEngine {
         this.board = newBoard;
         this.currentPlayer = opponent;
         return new MoveResult(true, "", newBoard, opponent, null);
+        
     }
 
     /**

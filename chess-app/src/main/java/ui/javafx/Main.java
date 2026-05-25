@@ -6,6 +6,12 @@ import javafx.animation.AnimationTimer;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.stage.Stage;
+import logic.game.Board;
+import logic.game.GameEngine;
+import logic.game.Move;
+import logic.game.MoveResult;
+import logic.game.Position;
+import logic.pieces.Piece;
 import javafx.scene.Group;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
@@ -21,7 +27,10 @@ import javafx.scene.layout.VBox;
 public class Main extends Application {
 	int L = 320;
 	static int l = 32;
+	GameEngine gameEngine = new GameEngine();
+
 	@Override
+	
 	public void start(Stage stage) {
 
 		
@@ -50,9 +59,18 @@ public class Main extends Application {
         stage.setScene(scene1);
         stage.setTitle("choisir le mode de jeu");
         stage.show();
+        
+
+		
+
+        
 		
 	}
 	private void game(String text) {
+		BoardFX boardfx = new BoardFX();
+		boardfx.updateMove(gameEngine.getBoard());
+		
+		boardfx.typeMatch=text;
 		Stage stage = new Stage();
 		Group root = new Group();
 		Scene scene = new Scene(root);
@@ -60,8 +78,7 @@ public class Main extends Application {
 		Image icon = new Image("pion.png");
 		stage.getIcons().add(icon);
 		
-		BoardFX board = new BoardFX();
-		board.typeMatch=text;
+		
 		
 		stage.setResizable(true);
 		stage.setFullScreen(false);
@@ -79,36 +96,35 @@ public class Main extends Application {
 		stage.show();
 		
 		
-
 		canvas.setOnMouseClicked(e -> {
 			double x = e.getSceneX();
 			double y = e.getSceneY();
 			Position p = doubleToPosition(x,y);
 			
-			Sprite next = board.getSpriteAt((p.x)/l -1,(p.y)/l -1);
+			Sprite next = boardfx.getSpriteAt((p.x)/l -1,(p.y)/l -1);
 			
-			Sprite cur = board.selectedSprite;
+			Sprite cur = boardfx.selectedSprite;
 			
 			if (cur==null) {
 				if (next!=null) {
-					board.selectedSprite=next;
+					boardfx.selectedSprite=next;
 					gc.drawImage(vert, 0, 0);
 				}
 			} else {
-				if (next==null) {
-					board.getArray()[(cur.p.x/l) -1][(cur.p.y)/l -1]=null;
-					cur.setPosition(p.x,p.y);
-					board.getArray()[(p.x/l) -1][(p.y)/l -1]=cur;
-					cur.render(gc);
-					board.selectedSprite=null;
+				Move move = new Move(new Position((cur.p.y)/l -1,(cur.p.x)/l -1),new Position((p.y)/l -1,(p.x)/l -1));
+				MoveResult moveResult = gameEngine.playMove(move);
+				if (moveResult.success==true) {
+					
+					boardfx.updateMove(gameEngine.getBoard());
+					boardfx.selectedSprite=null;
 					gc.drawImage(rouge, 0, 0);
 					
 				}else {
-					board.selectedSprite=null;
+					boardfx.selectedSprite=null;
 					gc.drawImage(rouge, 0, 0);
 					
 				}
-				
+			System.out.println(moveResult.currentPlayer.opposite() +" to play");
 			}
 			
 		});
@@ -119,10 +135,10 @@ public class Main extends Application {
 			@Override
 			public void handle(long lo) {
 				gc.drawImage(fond, 0, 0);
-				for (int i=0;i<board.getArray().length;i++) {
-		    		for (int j=0;j<board.getArray().length;j++) {
-		    			if (board.getArray()[i][j]!=null) {
-		    				board.getArray()[i][j].render(gc);
+				for (int i=0;i<8;i++) {
+		    		for (int j=0;j<8;j++) {
+		    			if (boardfx.getArray()[i][j]!=null) {
+		    				boardfx.getArray()[i][j].render(gc);
 		    			}
 		        		
 		        	}
@@ -141,6 +157,7 @@ public class Main extends Application {
 		return new Position((int)(x/l)*l,(int)(y/l)*l);
 	}
 	public static void main(String[] args) {
+		
 		launch(args);
 	}
 }

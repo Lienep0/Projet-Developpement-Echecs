@@ -2,6 +2,7 @@ package ui.javafx;
 
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.image.Image;
+import logic.game.Position;
 
 public class Sprite {
 	Image image;
