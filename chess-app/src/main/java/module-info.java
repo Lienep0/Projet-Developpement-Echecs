@@ -5,4 +5,5 @@ module org.example.chessapp {
 
     opens org.example.chessapp to javafx.fxml;
     exports org.example.chessapp;
+    exports ui.javafx;
 }
