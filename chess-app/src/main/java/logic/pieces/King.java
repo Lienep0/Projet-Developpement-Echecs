@@ -36,7 +36,7 @@ public class King extends Piece {
         int y = (color == WHITE) ? 7 : 0;
 
         // Il faut que la tour n'ait pas bougé
-        Piece rook = (dx == 2) ? board.getPieceAt(7, y) : board.getPieceAt(0, y);
+        Piece rook = (dx == 2) ? board.getPieceAt(new Position(7, y)) : board.getPieceAt(new Position(0, y));
         if (!(rook instanceof Rook) || rook.getHasMoved()) return false;
 
         // Le chemin doit être libre
