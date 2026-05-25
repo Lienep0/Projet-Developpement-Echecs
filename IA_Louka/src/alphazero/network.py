@@ -1,9 +1,7 @@
 from torch import nn
 
-epochs = 10000
-
 class AI(nn.Module):
-    def __init__(self, num=19):
+    def __init__(self, num=8):
         super().__init__()
         self.gelu = nn.GELU()
         self.conv = nn.Conv2d(24, 64, 3, stride=1, padding=1)
