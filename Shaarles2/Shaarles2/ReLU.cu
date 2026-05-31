@@ -55,7 +55,7 @@ public:
 		if (c_err != cudaSuccess) {
 			std::cerr << "cudaMemcpy failed: " << cudaGetErrorString(c_err) << std::endl;
 		}
-		reluForwardKernel << <(vec_size + 255) / 256, 256 >> > (input.dev_data, output.dev_data, this->mask.dev_data, vec_size);
+		reluForwardKernel << <(vec_size + 255) / 256, 256 >> > (input.dev_data, output.dev_data, mask.dev_data, vec_size);
 		
 		cudaDeviceSynchronize();
 		c_err = cudaMemcpy(output.data, output.dev_data, vec_size * sizeof(float), cudaMemcpyDeviceToHost);                                                                                                                                                                                                                                                                                        
@@ -64,9 +64,8 @@ public:
 			std::cerr << "cudaMemcpy failed for output data: " << cudaGetErrorString(c_err) << std::endl;
 		}
 
-
 		//veryfing the mask values
-		c_err = cudaMemcpy( (this->mask).data, (this->mask).dev_data, vec_size * sizeof(float), cudaMemcpyDeviceToHost);
+		c_err = cudaMemcpy( mask.data, mask.dev_data, vec_size * sizeof(float), cudaMemcpyDeviceToHost);
 		if (c_err != cudaSuccess) {
 			std::cerr << "cudaMemcpy failed for mask copy from device to host: " << cudaGetErrorString(c_err) << std::endl;
 		}
@@ -91,6 +90,7 @@ public:
 
 	vector<Tensor*> parameters() override {
 		// Return the parameters of the module (weights and bias)
+		// 
 		// This is a placeholder implementation
 		vector<Tensor*> outputVec = {&mask};
 		return outputVec;
@@ -99,4 +99,4 @@ public:
 	Tensor getMask() {
 		return mask;
 	}
-}                                                                  ;
+};

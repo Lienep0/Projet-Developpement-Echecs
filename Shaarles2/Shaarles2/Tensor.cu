@@ -9,8 +9,6 @@
 
 using namespace std;
 
-
-
 class Tensor {
 	//2D and 3D tensors are the only ones we need for our network
 
@@ -20,7 +18,7 @@ public:
 	int* strides = nullptr;//kinda like coordinates?
 	float* data = nullptr;
 	float* dev_data = nullptr; //for GPU tensors
-
+	int nbEle;
 
 	Tensor(int dimensions[], int ndim) {
 
@@ -36,7 +34,7 @@ public:
 			this->dimensions[i] = dimensions[i];
 		}
 		this->strides = new int[ndim];
-		int nbEle = 1;
+		nbEle = 1;
 		for (int i = 0; i < ndim; i++) {
 			strides[ndim - 1 - i] = nbEle;
 			cout << dimensions[i] << " nbEle: " << nbEle << endl;
@@ -69,7 +67,7 @@ public:
 		this->dimensions = new int[1];
 		this->dimensions[0] = size;
 		this->strides = new int[ndim];
-		int nbEle = 1;
+		nbEle = 1;
 		for (int i = 0; i < ndim; i++) {
 			this->strides[ndim - 1 - i] = nbEle;
 			cout << nbEle << endl;
@@ -108,6 +106,30 @@ public:
 		this->dev_data = nullptr;
 	}
 
+	Tensor(const Tensor& other) {
+		this->ndim = other.ndim;
+		this->dimensions = new int[ndim];
+		this->strides = new int[ndim];
+		
+		memcpy(dimensions, other.dimensions, ndim * sizeof(int));
+		memcpy(strides, other.strides, ndim * sizeof(int));
+
+		this->nbEle = other.nbEle;
+
+		cudaError_t err = cudaMallocHost(&data, nbEle * sizeof(float));
+		if (err != cudaSuccess) {
+			std::cerr << "cudaMallocHost failed: " << cudaGetErrorString(err) << std::endl;
+			data = nullptr;
+		}
+		err = cudaMalloc(&dev_data, nbEle * sizeof(float));
+		if (err != cudaSuccess) {
+			std::cerr << "cudaMalloc failed: " << cudaGetErrorString(err) << std::endl;
+			dev_data = nullptr;
+		}
+		cudaMemcpy(data, other.data, nbEle * sizeof(float), cudaMemcpyHostToHost);
+		cudaMemcpy(dev_data, other.dev_data, nbEle * sizeof(float), cudaMemcpyDeviceToDevice);
+	}
+
 	~Tensor() {
 		cudaFreeHost(data);
 		cudaFree(dev_data);
@@ -143,25 +165,46 @@ public:
 		}
 	}
 
-};
-
-
-
-Tensor multiply21(Tensor a, Tensor b) {
-	//Assuming it's 2d*1D (a*b)
-	cout << "b.dimensions[0]: " << b.dimensions[0] << " ndim: " << b.ndim << endl;
-	Tensor result(b.dimensions, b.ndim);
-	cout << "Multiplying 2D and 1D tensors " << endl;
-	for (int i = 0; i < b.dimensions[0]; i++) {
-		cout << "Calculating result.data[" << i << "]" << endl;
-		result.data[i] = 0;
-		cout << "result.data[" << i << "] = 0.0f" << endl;
-		for (int j = 0; j < a.dimensions[1]; j++) {
-			result.data[i] += a.data[i * a.strides[0] + j * a.strides[1]] * b.data[j * b.strides[0]];
-			cout << "result.data[" << i << "] += a.data[" << i * a.strides[0] + j * a.strides[1] << "] * b.data[" << j * b.strides[0] << "]" << endl;
-		}
+	Tensor copy() {
+		
+		return Tensor(*this);
 	}
-	return result;
 
-}
+	Tensor& operator=(const Tensor& other) {
+		if (this != &other) {
+			// Free existing resources
+			cudaFreeHost(data);
+			cudaFree(dev_data);
+			delete[] dimensions;
+			delete[] strides;
+			// Copy dimensions and strides
+			ndim = other.ndim;
+			dimensions = new int[ndim];
+			strides = new int[ndim];
+			memcpy(dimensions, other.dimensions, ndim * sizeof(int));
+			memcpy(strides, other.strides, ndim * sizeof(int));
+			nbEle = other.nbEle;
+			// Allocate new memory and copy data
+			cudaError_t err = cudaMallocHost(&data, nbEle * sizeof(float));
+			if (err != cudaSuccess) {
+				std::cerr << "cudaMallocHost failed: " << cudaGetErrorString(err) << std::endl;
+				data = nullptr;
+			}
+			err = cudaMalloc(&dev_data, nbEle * sizeof(float));
+			if (err != cudaSuccess) {
+				std::cerr << "cudaMalloc failed: " << cudaGetErrorString(err) << std::endl;
+				dev_data = nullptr;
+			}
+			err = cudaMemcpy(data, other.data, nbEle * sizeof(float), cudaMemcpyHostToHost);
+			if (err != cudaSuccess) {
+				std::cerr << "cudaMemcpy failed for host to host copy: " << cudaGetErrorString(err) << std::endl;
+			}
+			err = cudaMemcpy(dev_data, other.dev_data, nbEle * sizeof(float), cudaMemcpyDeviceToDevice);
+			if (err != cudaSuccess) {
+				std::cerr << "cudaMemcpy failed for device to device copy: " << cudaGetErrorString(err) << std::endl;
+			}
+		}
+		return *this;
+	}
 
+};
