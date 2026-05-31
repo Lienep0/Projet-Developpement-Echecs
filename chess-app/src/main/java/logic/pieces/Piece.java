@@ -39,15 +39,21 @@ public abstract class Piece {
         if (move.start.x<0 || move.start.x>7 || move.start.y<0 || move.start.y>7
             || move.end.x<0 || move.end.x>7 || move.end.y<0 || move.end.y>7
         ) {
+        	System.out.println("hors du plateau");
             throw new OutOfBoardException("Mouvement en dehors du plateau.");
         }
 
         // Il y a déplacement
-        if (move.dx() == 0 && move.dy() == 0) return false;
+        if (move.dx() == 0 && move.dy() == 0) {
+        	System.out.println("pas de déplacement");
+        	return false;
+        }
 
         // Arrivée pas déjà occupée par la même couleur
         Piece target = board.getPieceAt(move.end);
-        if (target != null && target.color == color) return false;
+        if (target != null && target.color == color) {
+        	return false;
+        }
 
         // Mode de déplacement de la pièce respecté
         return isPieceMove(move, board);

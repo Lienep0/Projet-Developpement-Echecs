@@ -55,7 +55,7 @@ public class GameEngine {
             if (!piece.isValidMove(move, board)) {
             	
             	System.out.println("coup invalide");
-            	return new MoveResult(false, "invalidMove", board, currentPlayer, null);
+            	return new MoveResult(false, "invalidMove", board, opponent, null);
             }
         } catch (OutOfBoardException e) {
         	System.out.println("out of board");
@@ -124,6 +124,8 @@ public class GameEngine {
         }
         if (opponentInCheck) {
         	System.out.println("check");
+        	this.board = newBoard;
+            this.currentPlayer = opponent;
             return new MoveResult(true, "check", newBoard, opponent, null);
         }
 

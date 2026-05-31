@@ -27,12 +27,16 @@ public class Pawn extends Piece {
 
         // Cas tout droit
         if (dx == 0) {
-            if (target != null) return false; // Case d'arrivée vide
+            if (target != null) {
+            	System.out.println("case arrivé vide");
+            	return false; // Case d'arrivée vide
+            }
             if (dy == dir) return true; // Direction respectée
 
             // Cas où on avance de 2
             if (move.start.y == startRow && dy == 2 * dir) {
                 Position mid = new Position(move.start.x, move.start.y + dir);
+                System.out.println(board.getPieceAt(mid) == null);
                 return board.getPieceAt(mid) == null; // La case intermédiaire doit être vide
             }
         }
