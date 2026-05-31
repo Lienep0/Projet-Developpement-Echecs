@@ -1,6 +1,8 @@
 package ui.javafx;
 
+import javafx.geometry.Rectangle2D;
 import javafx.scene.canvas.GraphicsContext;
+import javafx.stage.Screen;
 import logic.game.Color;
 import logic.pieces.Bishop;
 import logic.pieces.King;
@@ -18,7 +20,9 @@ public class BoardFX {
     
     
     
-    int l=32;
+    static Rectangle2D bounds = Screen.getPrimary().getBounds();
+	static int L = (int) bounds.getHeight();
+	static int l = L/10;
 
     public BoardFX() {
         spriteArray = new Sprite[8][8];

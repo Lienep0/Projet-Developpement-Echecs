@@ -5,8 +5,11 @@ package ui.javafx;
 import javafx.animation.AnimationTimer;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
+import javafx.geometry.Rectangle2D;
+import javafx.stage.Screen;
 import javafx.stage.Stage;
 import logic.game.Board;
+import logic.game.Color;
 import logic.game.GameEngine;
 import logic.game.Move;
 import logic.game.MoveResult;
@@ -22,11 +25,13 @@ import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
+import javafx.scene.text.Text;
 
 
 public class Main extends Application {
-	int L = 320;
-	static int l = 32;
+	static Rectangle2D bounds = Screen.getPrimary().getBounds();
+	static int L = (int) bounds.getHeight();
+	static int l = L/10;
 	GameEngine gameEngine = new GameEngine();
 
 	@Override
@@ -55,7 +60,7 @@ public class Main extends Application {
 
         box.setStyle("-fx-padding: 20; -fx-alignment: center;");
 
-        Scene scene1 = new Scene(box, 400, 200);
+        Scene scene1 = new Scene(box, 800, 400);
         stage.setScene(scene1);
         stage.setTitle("choisir le mode de jeu");
         stage.show();
@@ -86,6 +91,9 @@ public class Main extends Application {
 		Image fond = new Image("echequier.png",L,L,false,false);
 		Image vert = new Image("vert.png",l,l,false,false);
 		Image rouge = new Image("rouge.png",l,l,false,false);
+		Image white = new Image("white.png",2*l,l,false,false);
+		Image black = new Image("black.png",2*l,l,false,false);
+		
 		root.getChildren().add(canvas);
 		GraphicsContext gc = canvas.getGraphicsContext2D();
 
@@ -108,6 +116,7 @@ public class Main extends Application {
 			if (cur==null) {
 				if (next!=null) {
 					boardfx.selectedSprite=next;
+					
 					gc.drawImage(vert, 0, 0);
 				}
 			} else {
@@ -118,10 +127,20 @@ public class Main extends Application {
 					
 					boardfx.updateMove(gameEngine.getBoard());
 					boardfx.selectedSprite=null;
+					if (gameEngine.getCurrentPlayer()==Color.WHITE) {
+						gc.drawImage(white, l, -5);						
+					} else {
+						gc.drawImage(black, l, -5);
+					}
 					gc.drawImage(rouge, 0, 0);
 					
 				}else {
 					boardfx.selectedSprite=null;
+					if (gameEngine.getCurrentPlayer()==Color.WHITE) {
+						gc.drawImage(white, l, -5);						
+					} else {
+						gc.drawImage(black, l, -5);
+					}
 					gc.drawImage(rouge, 0, 0);
 					
 				}

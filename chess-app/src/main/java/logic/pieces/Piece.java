@@ -45,7 +45,6 @@ public abstract class Piece {
 
         // Il y a déplacement
         if (move.dx() == 0 && move.dy() == 0) {
-        	System.out.println("pas de déplacement");
         	return false;
         }
 
