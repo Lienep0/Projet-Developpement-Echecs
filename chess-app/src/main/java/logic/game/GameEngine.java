@@ -40,7 +40,10 @@ public class GameEngine {
 
         // Vérifier que la case de départ n'est pas vide
         Piece piece = board.getPieceAt(move.start);
-        if (piece == null) return new MoveResult(false, "noPiece", board, currentPlayer, null);
+        if (piece == null) {
+        	System.out.println("pas de pièce");
+        	return new MoveResult(false, "noPiece", board, currentPlayer, null);
+        }
 
         // Vérifier que c'est bien au tour de ce joueur
         Color currentPlayer = piece.getColor();
@@ -49,15 +52,20 @@ public class GameEngine {
 
         // Vérifier que le coup est légal (au sens des capacités de la pièce)
         try {
-            if (!piece.isValidMove(move, board))
-                return new MoveResult(false, "invalidMove", board, currentPlayer, null);
+            if (!piece.isValidMove(move, board)) {
+            	
+            	System.out.println("coup invalide");
+            	return new MoveResult(false, "invalidMove", board, currentPlayer, null);
+            }
         } catch (OutOfBoardException e) {
+        	System.out.println("out of board");
             return new MoveResult(false, "outOfBoard", board, currentPlayer, null);
         }
 
         // On joue temporairement le coup sur le plateau pour effectuer les vérifications suivantes
         Board newBoard = new Board(board);
         newBoard.executeMove(move);
+        
 
         // Vérifier si le coup permet une promotion (auquel cas on promeut immédiatement à une Reine pour l'instant)
         if (piece instanceof Pawn) {
@@ -88,9 +96,15 @@ public class GameEngine {
 
         // Vérifier que le coup ne met pas le joueur en échec
         if (currentPlayer == WHITE) {
-            if (newBoard.isAttacked(newBoard.getWhiteKingPos(), WHITE)) return new MoveResult(false, "putPlayerInCheck", board, currentPlayer, null);
+            if (newBoard.isAttacked(newBoard.getWhiteKingPos(), WHITE)) {
+            	System.out.println("le roi blanc est attaqué");
+            	return new MoveResult(false, "putPlayerInCheck", board, currentPlayer, null);
+            }
         } else {
-            if (newBoard.isAttacked(newBoard.getBlackKingPos(), BLACK)) return new MoveResult(false, "putPlayerInCheck", board, currentPlayer, null);
+            if (newBoard.isAttacked(newBoard.getBlackKingPos(), BLACK)) {
+            	System.out.println("le roi noir est attaqué");
+            	return new MoveResult(false, "putPlayerInCheck", board, currentPlayer, null);
+            }
         }
 
         // Vérifier si le coup aboutit à une position finale
@@ -101,25 +115,20 @@ public class GameEngine {
         );
         if (!opponentCanMove) {
             if (opponentInCheck) {
-            	this.board = newBoard;
-            	this.currentPlayer = opponent;
             	System.out.println("checkmate");
                 return new MoveResult(true, "checkmate", newBoard, opponent, currentPlayer);
             } else {
-            	this.board = newBoard;
-            	this.currentPlayer = opponent;
             	System.out.println("stalemate");
                 return new MoveResult(true, "stalemate", newBoard, opponent, currentPlayer);
             }
         }
         if (opponentInCheck) {
-        	this.board = newBoard;
-        	this.currentPlayer = opponent;
         	System.out.println("check");
             return new MoveResult(true, "check", newBoard, opponent, null);
         }
 
         // Sinon, valider le coup et renvoyer l'état actuel du jeu
+        
         this.board = newBoard;
         this.currentPlayer = opponent;
         return new MoveResult(true, "", newBoard, opponent, null);
