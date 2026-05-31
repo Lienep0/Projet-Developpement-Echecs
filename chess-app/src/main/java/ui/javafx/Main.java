@@ -113,6 +113,7 @@ public class Main extends Application {
 			} else {
 				Move move = new Move(new Position((cur.p.y)/l -1,(cur.p.x)/l -1),new Position((p.y)/l -1,(p.x)/l -1));
 				MoveResult moveResult = gameEngine.playMove(move);
+
 				if (moveResult.success==true) {
 					
 					boardfx.updateMove(gameEngine.getBoard());
