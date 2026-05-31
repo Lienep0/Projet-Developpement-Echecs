@@ -6,6 +6,8 @@ package logic.game;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import logic.exceptions.OutOfBoardException;
 import logic.pieces.*;
 import static logic.game.Color.*;
 
@@ -36,14 +38,22 @@ public class GameEngine {
      */
     public MoveResult playMove(Move move) {
 
-        // Vérifier que c'est bien au tour de ce joueur
+        // Vérifier que la case de départ n'est pas vide
         Piece piece = board.getPieceAt(move.start);
+        if (piece == null) return new MoveResult(false, "noPiece", board, currentPlayer, null);
+
+        // Vérifier que c'est bien au tour de ce joueur
         Color currentPlayer = piece.getColor();
         Color opponent = currentPlayer.opposite();
         if (currentPlayer != this.currentPlayer) return new MoveResult(false, "notPlayerTurn", board, currentPlayer, null);
 
         // Vérifier que le coup est légal (au sens des capacités de la pièce)
-        piece.isValidMove(move, board);
+        try {
+            if (!piece.isValidMove(move, board))
+                return new MoveResult(false, "invalidMove", board, currentPlayer, null);
+        } catch (OutOfBoardException e) {
+            return new MoveResult(false, "outOfBoard", board, currentPlayer, null);
+        }
 
         // On joue temporairement le coup sur le plateau pour effectuer les vérifications suivantes
         Board newBoard = new Board(board);
@@ -139,7 +149,7 @@ public class GameEngine {
                     ? newBoard.getWhiteKingPos()
                     : newBoard.getBlackKingPos();
 
-            if (!newBoard.isAttacked(kingPos, currentPlayer)) {
+            if (!newBoard.isAttacked(kingPos, piece.getColor())) {
                 possibleMoves.add(move);
             }
         }
