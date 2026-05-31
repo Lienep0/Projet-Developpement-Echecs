@@ -25,20 +25,20 @@ public class Pawn extends Piece {
         int startRow = (color == WHITE) ? 6 : 1;
         Piece target = board.getPieceAt(move.end);
 
-        // Cas tout droit
-        if (dx == 0) {
+        // Cas tout droit (avance le long de l'axe x / rangée)
+        if (dy == 0) {
             if (target != null) return false; // Case d'arrivée vide
-            if (dy == dir) return true; // Direction respectée
+            if (dx == dir) return true; // Direction respectée
 
             // Cas où on avance de 2
-            if (move.start.y == startRow && dy == 2 * dir) {
-                Position mid = new Position(move.start.x, move.start.y + dir);
+            if (move.start.x == startRow && dx == 2 * dir) {
+                Position mid = new Position(move.start.x + dir, move.start.y);
                 return board.getPieceAt(mid) == null; // La case intermédiaire doit être vide
             }
         }
 
         // Cas diagonal
-        if (Math.abs(dx) == 1 && dy == dir) {
+        if (Math.abs(dy) == 1 && dx == dir) {
             return target != null || isEnPassant(move, board); // Il faut une pièce à capturer (couleur vérifiée dans isValidMove dans Piece)
         }
 
@@ -48,10 +48,10 @@ public class Pawn extends Piece {
 
     private boolean isEnPassant(Move move, Board board) {
         Move lastMove = board.getLastMove();
-        if (lastMove != null && board.getPieceAt(lastMove.end) instanceof Pawn && Math.abs(lastMove.dy()) == 2) {
+        if (lastMove != null && board.getPieceAt(lastMove.end) instanceof Pawn && Math.abs(lastMove.dx()) == 2) {
             if (
-                    (color == WHITE && move.end.y == lastMove.end.y-1 && move.end.x == lastMove.end.x)
-                || (color == BLACK && move.end.y == lastMove.end.y+1 && move.end.x == lastMove.end.x)
+                    (color == WHITE && move.end.x == lastMove.end.x - 1 && move.end.y == lastMove.end.y)
+                            || (color == BLACK && move.end.x == lastMove.end.x + 1 && move.end.y == lastMove.end.y)
             ) {
                 return true;
             }
@@ -62,7 +62,7 @@ public class Pawn extends Piece {
     @Override
     public boolean canAttack(Move move, Board board) {
         int dir = (color == WHITE) ? -1 : 1;
-        return (Math.abs(move.dx()) == 1 && move.dy() == dir);
+        return (Math.abs(move.dy()) == 1 && move.dx() == dir);
     }
 
 }
