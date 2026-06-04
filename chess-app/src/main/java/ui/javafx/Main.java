@@ -86,7 +86,7 @@ public class Main extends Application {
 		
 		
 		stage.setResizable(true);
-		stage.setFullScreen(false);
+		stage.setFullScreen(true);
 		Canvas canvas = new Canvas(L,L);
 		Image fond = new Image("echequier.png",L,L,false,false);
 		Image vert = new Image("vert.png",l,l,false,false);
