@@ -14,7 +14,8 @@
 /Shaarles2/.vs/Shaarles2/CopilotIndices/18.4.114.215
 *.ex
 *.exe
-/IA_Louka/data/PGN_files/
+/AI/data/PGN_files/
+/AI/data/pretrain_moves_dataset.h5
 /Shaarles2/.vs/Shaarles2/CopilotIndices/18.5.39150.21849
 /Shaarles2/.vs/CopilotSnapshots/33C9F0B7ABA4B141BE217943AAD99C55
 /Shaarles2/.vs/Shaarles2/CopilotIndices
