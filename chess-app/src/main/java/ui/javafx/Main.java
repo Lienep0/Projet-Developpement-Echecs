@@ -93,6 +93,7 @@ public class Main extends Application {
 		stage.setFullScreen(true);
 		Canvas canvas = new Canvas(L,L);
 		Image fond = new Image("echequier.png",L,L,false,false);
+		Image fondNoir = new Image("echequierNoir.png",L,L,false,false);
 		Image vert = new Image("vert.png",l,l,false,false);
 		Image rouge = new Image("rouge.png",l,l,false,false);
 		Image white = new Image("white.png",2*l,l,false,false);
@@ -170,7 +171,11 @@ public class Main extends Application {
 		AnimationTimer at = new AnimationTimer() {
 			@Override
 			public void handle(long lo) {
-				gc.drawImage(fond, 0, 0);
+				if (gameEngine.getCurrentPlayer()==Color.BLACK) {
+					gc.drawImage(fond, 0, 0);
+				} else {
+					gc.drawImage(fondNoir, 0, 0);
+				}
 				for (int i=0;i<8;i++) {
 		    		for (int j=0;j<8;j++) {
 		    			if (boardfx.getArray()[i][j]!=null) {
