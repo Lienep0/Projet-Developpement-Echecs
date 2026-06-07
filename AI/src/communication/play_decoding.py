@@ -13,7 +13,7 @@ class PlayDecoding():
         
         from_sq = r * 8 + c
         
-        to_sq = 0
+        to_sq = 0 
         p_type = None
         
         if plan_idx < 56:
@@ -21,7 +21,7 @@ class PlayDecoding():
             dist = (plan_idx % 7) + 1
             dirs = [(1, 0), (1, 1), (0, 1), (-1, 1), (-1, 0), (-1, -1), (0, -1), (1, -1)]
             dr, dc = dirs[d_idx]
-            to_sq = (r + dr * dist) * 8 + (c + dc)
+            to_sq = (r + dr * dist) * 8 + (c + dc * dist)
             
         elif plan_idx < 64:
             k_idx = plan_idx - 56
