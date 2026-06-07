@@ -19,7 +19,9 @@ public class Sprite {
 	}
 
 	
-	
+	void renderBlack(GraphicsContext gc) {
+		gc.drawImage(this.image, this.p.x,9*l-this.p.y);
+	}
 	void render(GraphicsContext gc) {
 		gc.drawImage(this.image, this.p.x,this.p.y);
 		

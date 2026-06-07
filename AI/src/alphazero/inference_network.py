@@ -50,7 +50,7 @@ class OutBlockValueHead(nn.Module):
         self.conv = nn.Conv2d(64, 64, 3, stride=1, padding=1)
         self.batchnorm = nn.BatchNorm2d(64)
         self.linear = nn.Linear(4096, 3)
-        """self.softmax = nn.Softmax(dim=1)"""
+        self.softmax = nn.Softmax(dim=1)
 
     def forward(self, x):
         x = self.conv(x)
@@ -59,8 +59,8 @@ class OutBlockValueHead(nn.Module):
         batch = x.size(0)
         x = x.reshape(batch,-1)
         x = self.linear(x)
-        """x = self.softmax(x)"""
-        """x = x.reshape(batch, 3)"""
+        x = self.softmax(x)
+        x = x.reshape(batch, 3)
         return x
 
 
@@ -71,7 +71,7 @@ class OutBlockPolicyHead(nn.Module):
         self.gelu = nn.GELU()
         self.conv = nn.Conv2d(64, 64, 3, stride=1, padding=1)
         self.batchnorm = nn.BatchNorm2d(64)
-        """self.softmax = nn.Softmax(dim=1)"""
+        self.softmax = nn.Softmax(dim=1)
         self.linear = nn.Linear(4096, 4672)
 
     def forward(self, x):
@@ -81,8 +81,8 @@ class OutBlockPolicyHead(nn.Module):
         batch = x.size(0)
         x = x.reshape(batch,-1)
         x = self.linear(x)
-        """x = self.softmax(x)"""
-        """x = x.reshape(batch, 73,8,8)"""
+        x = self.softmax(x)
+        x = x.reshape(batch, 73,8,8)
         return x
 
 

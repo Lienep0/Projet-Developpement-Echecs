@@ -89,12 +89,15 @@ public class GameEngine {
                 rook.makeMoved();
                 newBoard.updateArray(new Position(row, 5), rook);
                 newBoard.updateArray(new Position(row, 7), null);
+      
             }
             else if (move.end.y == 2) { // Grand roque
                 Piece rook = newBoard.getPieceAt(new Position(row, 0));
                 rook.makeMoved();
                 newBoard.updateArray(new Position(row, 3), rook);
                 newBoard.updateArray(new Position(row, 0), null);
+               
+                
             }
         }
 

@@ -8,11 +8,9 @@ import java.util.List;
 
 import javafx.animation.AnimationTimer;
 import javafx.application.Application;
-import javafx.fxml.FXMLLoader;
 import javafx.geometry.Rectangle2D;
 import javafx.stage.Screen;
 import javafx.stage.Stage;
-import logic.game.Board;
 import logic.game.Color;
 import logic.game.GameEngine;
 import logic.game.Move;
@@ -20,16 +18,16 @@ import logic.game.MoveResult;
 import logic.game.Position;
 import logic.pieces.Piece;
 import javafx.scene.Group;
-import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.Button;
+import javafx.scene.control.ChoiceBox;
+import javafx.scene.control.ComboBox;
+import javafx.scene.control.ListView;
 import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
-import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
-import javafx.scene.text.Text;
 
 
 public class Main extends Application {
@@ -44,22 +42,26 @@ public class Main extends Application {
 
 		
 		
-		TextField textField = new TextField();
-        textField.setPromptText("Classic/Bot1/Bot2");
-
+		
+        
+        
+        ChoiceBox<String> choiceBox = new ChoiceBox<>();
+        choiceBox.getItems().addAll("classic","bot_algorithme","bot_reseau_de_neurones");
+        choiceBox.setValue("classic");
+        
 
         Button button = new Button("Valider");
         button.setOnAction(e -> {
-            String text = textField.getText();
+            String text = choiceBox.getValue();
             System.out.println("Texte saisi : " + text);
 
             
             stage.close();
             game(text);
-        });
+        }); 
 	
     
-        VBox box = new VBox(10, textField, button);
+        VBox box = new VBox(10, choiceBox, button);
 
 
         box.setStyle("-fx-padding: 20; -fx-alignment: center;");
@@ -76,7 +78,9 @@ public class Main extends Application {
 		
 	}
 	private void game(String text) {
+		
 		BoardFX boardfx = new BoardFX();
+		boardfx.typeMatch=text;
 		boardfx.updateMove(gameEngine.getBoard());
 		
 		boardfx.typeMatch=text;
@@ -93,6 +97,7 @@ public class Main extends Application {
 		stage.setFullScreen(true);
 		Canvas canvas = new Canvas(L,L);
 		Image fond = new Image("echequier.png",L,L,false,false);
+		Image fondNoir = new Image("echequierNoir.png",L,L,false,false);
 		Image vert = new Image("vert.png",l,l,false,false);
 		Image rouge = new Image("rouge.png",l,l,false,false);
 		Image white = new Image("white.png",2*l,l,false,false);
@@ -113,6 +118,9 @@ public class Main extends Application {
 			double x = e.getSceneX();
 			double y = e.getSceneY();
 			Position p = doubleToPosition(x,y);
+			if (gameEngine.getCurrentPlayer()==Color.BLACK) {
+				p=new Position(p.x,9*l-p.y);
+			}
 			
 			Sprite next = boardfx.getSpriteAt((p.x)/l -1,(p.y)/l -1);
 			
@@ -157,7 +165,7 @@ public class Main extends Application {
 					gc.drawImage(rouge, 0, 0);
 					
 				}
-			System.out.println(moveResult.currentPlayer.opposite() +" to play");
+			
 			}
 			
 		});
@@ -167,11 +175,23 @@ public class Main extends Application {
 		AnimationTimer at = new AnimationTimer() {
 			@Override
 			public void handle(long lo) {
-				gc.drawImage(fond, 0, 0);
+				if (gameEngine.getCurrentPlayer()==Color.BLACK) {
+					gc.drawImage(fond, 0, 0);
+				} else {
+					gc.drawImage(fondNoir, 0, 0);
+				}
 				for (int i=0;i<8;i++) {
 		    		for (int j=0;j<8;j++) {
 		    			if (boardfx.getArray()[i][j]!=null) {
-		    				boardfx.getArray()[i][j].render(gc);
+		    				
+		    				Sprite sprite= boardfx.getArray()[i][j];
+		    				if (gameEngine.getCurrentPlayer()==Color.BLACK) {
+		    					sprite.renderBlack(gc);
+		    				} else {
+		    					sprite.render(gc);
+		    				}
+		    				
+		    				
 		    			}
 		        		
 		        	}
@@ -185,8 +205,11 @@ public class Main extends Application {
 				    int posy = pos.y;
 				    Sprite violet = new Sprite("prev.png",l);
 				    violet.setPosition((posy+1)*l, (posx+1)*l);
-				    violet.render(gc);
-				    
+				    if (gameEngine.getCurrentPlayer()==Color.BLACK) {
+    					violet.renderBlack(gc);
+    				} else {
+    					violet.render(gc);
+    				}
 				}
 
 
