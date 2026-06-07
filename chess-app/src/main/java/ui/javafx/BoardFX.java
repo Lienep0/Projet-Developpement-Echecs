@@ -1,7 +1,6 @@
 package ui.javafx;
 
 import javafx.geometry.Rectangle2D;
-import javafx.scene.canvas.GraphicsContext;
 import javafx.stage.Screen;
 import logic.game.Color;
 import logic.pieces.Bishop;

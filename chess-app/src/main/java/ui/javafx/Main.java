@@ -8,11 +8,9 @@ import java.util.List;
 
 import javafx.animation.AnimationTimer;
 import javafx.application.Application;
-import javafx.fxml.FXMLLoader;
 import javafx.geometry.Rectangle2D;
 import javafx.stage.Screen;
 import javafx.stage.Stage;
-import logic.game.Board;
 import logic.game.Color;
 import logic.game.GameEngine;
 import logic.game.Move;
@@ -20,16 +18,16 @@ import logic.game.MoveResult;
 import logic.game.Position;
 import logic.pieces.Piece;
 import javafx.scene.Group;
-import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.Button;
+import javafx.scene.control.ChoiceBox;
+import javafx.scene.control.ComboBox;
+import javafx.scene.control.ListView;
 import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
-import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
-import javafx.scene.text.Text;
 
 
 public class Main extends Application {
@@ -44,22 +42,26 @@ public class Main extends Application {
 
 		
 		
-		TextField textField = new TextField();
-        textField.setPromptText("Classic/Bot1/Bot2");
-
+		
+        
+        
+        ChoiceBox<String> choiceBox = new ChoiceBox<>();
+        choiceBox.getItems().addAll("classic","bot_algorithme","bot_reseau_de_neurones");
+        choiceBox.setValue("classic");
+        
 
         Button button = new Button("Valider");
         button.setOnAction(e -> {
-            String text = textField.getText();
+            String text = choiceBox.getValue();
             System.out.println("Texte saisi : " + text);
 
             
             stage.close();
             game(text);
-        });
+        }); 
 	
     
-        VBox box = new VBox(10, textField, button);
+        VBox box = new VBox(10, choiceBox, button);
 
 
         box.setStyle("-fx-padding: 20; -fx-alignment: center;");
@@ -76,7 +78,9 @@ public class Main extends Application {
 		
 	}
 	private void game(String text) {
+		
 		BoardFX boardfx = new BoardFX();
+		boardfx.typeMatch=text;
 		boardfx.updateMove(gameEngine.getBoard());
 		
 		boardfx.typeMatch=text;
