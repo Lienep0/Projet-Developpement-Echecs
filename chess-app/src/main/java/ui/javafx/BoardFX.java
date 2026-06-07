@@ -69,6 +69,7 @@ public class BoardFX {
     	spriteArray[4][0]=new Sprite("roi_noir.png",l);
     	spriteArray[4][0].setPosition(5*l,1*l);
     	spriteArray[4][7]=new Sprite("roi.png",l);
+    	
     	spriteArray[4][7].setPosition(5*l,8*l); */
         
         

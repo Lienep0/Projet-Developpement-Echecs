@@ -2,6 +2,10 @@ package ui.javafx;
 	
 
 
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+
 import javafx.animation.AnimationTimer;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
@@ -33,7 +37,7 @@ public class Main extends Application {
 	static int L = (int) bounds.getHeight();
 	static int l = L/10;
 	GameEngine gameEngine = new GameEngine();
-
+	List<Move> moves = new ArrayList<>();
 	@Override
 	
 	public void start(Stage stage) {
@@ -94,6 +98,7 @@ public class Main extends Application {
 		Image white = new Image("white.png",2*l,l,false,false);
 		Image black = new Image("black.png",2*l,l,false,false);
 		
+		
 		root.getChildren().add(canvas);
 		GraphicsContext gc = canvas.getGraphicsContext2D();
 
@@ -103,7 +108,7 @@ public class Main extends Application {
 		stage.setScene(scene);
 		stage.show();
 		
-		
+		moves = new ArrayList<>();
 		canvas.setOnMouseClicked(e -> {
 			double x = e.getSceneX();
 			double y = e.getSceneY();
@@ -116,8 +121,15 @@ public class Main extends Application {
 			if (cur==null) {
 				if (next!=null) {
 					boardfx.selectedSprite=next;
+					Piece[][] board = gameEngine.getBoard();
+					if (board[(next.p.y)/l -1][(next.p.x)/l -1].getColor()==gameEngine.getCurrentPlayer()) {
+						moves = gameEngine.getPossibleMoves(new Position((next.p.y)/l -1,(next.p.x)/l -1));
+						gc.drawImage(vert, 0, 0);
+					}
 					
-					gc.drawImage(vert, 0, 0);
+					
+					
+					
 				}
 			} else {
 				Move move = new Move(new Position((cur.p.y)/l -1,(cur.p.x)/l -1),new Position((p.y)/l -1,(p.x)/l -1));
@@ -127,6 +139,7 @@ public class Main extends Application {
 					
 					boardfx.updateMove(gameEngine.getBoard());
 					boardfx.selectedSprite=null;
+					moves = new ArrayList<>();
 					if (gameEngine.getCurrentPlayer()==Color.WHITE) {
 						gc.drawImage(white, l, -5);						
 					} else {
@@ -163,7 +176,18 @@ public class Main extends Application {
 		        		
 		        	}
 		    	}
+				Iterator<Move> it = moves.iterator();
 
+				while (it.hasNext()) {
+				    Move move = it.next();
+				    Position pos = move.end;
+				    int posx = pos.x;
+				    int posy = pos.y;
+				    Sprite violet = new Sprite("prev.png",l);
+				    violet.setPosition((posy+1)*l, (posx+1)*l);
+				    violet.render(gc);
+				    
+				}
 
 
 				
