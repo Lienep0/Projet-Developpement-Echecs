@@ -14,15 +14,18 @@ public class AlgebraicNotation {
      * @return Notation algébrique de ces coordonnées
      */
     public static String toAlgebraicNotation(Position position) {
-        return "" + (char)(65+position.x) + (7-position.y);
+        return "" + (char)(97 + position.y) + (8 - position.x);
     }
 
     /** Conversion en coordonnées
-     * @param algebraicNotation Notation algébrique (lettres en MAJUSCULES)
+     * @param algebraicNotation Notation algébrique
      * @return Coordonnées
      */
     public static Position toCoordinates(String algebraicNotation) {
-        return new Position(algebraicNotation.charAt(0)-65, 7-Integer.parseInt(String.valueOf(algebraicNotation.charAt(1))));
+        int y = algebraicNotation.charAt(0) - 97;
+        int x = 8 - Character.getNumericValue(algebraicNotation.charAt(1));
+
+        return new Position(x, y);
     }
 
 }

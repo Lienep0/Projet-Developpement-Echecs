@@ -17,6 +17,13 @@ class Move:
     def san(self, board: Any, legal_moves: list['Move'] | None = None) -> str:
         """Return standard algebraic notation for this move."""
         return move_to_san(self, board, legal_moves)
+        
+    def lan(self) -> str:
+        """Return UCI for this move"""
+        start = square_name(self.from_sq)
+        end = square_name(self.to_sq)
+        promo = self.promotion.lower() if self.promotion else ""
+        return f"{start}{end}{promo}"
 
 @dataclass
 class Undo:

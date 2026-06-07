@@ -42,8 +42,7 @@ def main():
             break
 
     if best_move:
-        legal = generate_legal_moves(board, board.active_color)
-        print(best_move.san(board, legal))
+        print(best_move.lan()) 
     else:
         print("No move found")
 

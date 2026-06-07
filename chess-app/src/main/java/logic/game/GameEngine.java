@@ -31,6 +31,10 @@ public class GameEngine {
         return currentPlayer;
     }
 
+    public Move getLastMove() {
+        return board.getLastMove();
+    }
+
     /**
      * Méthode principale, permet de jouer un coup.
      * @param move Coup à jouer
