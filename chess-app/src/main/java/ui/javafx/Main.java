@@ -157,7 +157,7 @@ public class Main extends Application {
 					gc.drawImage(rouge, 0, 0);
 					
 				}
-			System.out.println(moveResult.currentPlayer.opposite() +" to play");
+			
 			}
 			
 		});
