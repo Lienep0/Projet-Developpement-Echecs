@@ -113,6 +113,9 @@ public class Main extends Application {
 			double x = e.getSceneX();
 			double y = e.getSceneY();
 			Position p = doubleToPosition(x,y);
+			if (gameEngine.getCurrentPlayer()==Color.BLACK) {
+				p=new Position(p.x,9*l-p.y);
+			}
 			
 			Sprite next = boardfx.getSpriteAt((p.x)/l -1,(p.y)/l -1);
 			
@@ -171,7 +174,15 @@ public class Main extends Application {
 				for (int i=0;i<8;i++) {
 		    		for (int j=0;j<8;j++) {
 		    			if (boardfx.getArray()[i][j]!=null) {
-		    				boardfx.getArray()[i][j].render(gc);
+		    				
+		    				Sprite sprite= boardfx.getArray()[i][j];
+		    				if (gameEngine.getCurrentPlayer()==Color.BLACK) {
+		    					sprite.renderBlack(gc);
+		    				} else {
+		    					sprite.render(gc);
+		    				}
+		    				
+		    				
 		    			}
 		        		
 		        	}
@@ -185,8 +196,11 @@ public class Main extends Application {
 				    int posy = pos.y;
 				    Sprite violet = new Sprite("prev.png",l);
 				    violet.setPosition((posy+1)*l, (posx+1)*l);
-				    violet.render(gc);
-				    
+				    if (gameEngine.getCurrentPlayer()==Color.BLACK) {
+    					violet.renderBlack(gc);
+    				} else {
+    					violet.render(gc);
+    				}
 				}
 
 
