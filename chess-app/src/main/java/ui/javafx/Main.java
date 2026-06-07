@@ -154,23 +154,35 @@ public class Main extends Application {
 					System.out.println(boardfx.typeMatch);
 					switch (boardfx.typeMatch) {
 						case "classic":
-							if (gameEngine.getCurrentPlayer()==Color.WHITE) {
+							if (gameEngine.getCurrentPlayer() == Color.WHITE) {
 								gc.drawImage(white, l, -5);						
 							} else {
 								gc.drawImage(black, l, -5);
 							}
 							gc.drawImage(rouge, 0, 0);
+							break; // <--- MANQUANT
+
 						case "bot_algorithme":
-							Move moveBot = BotConnect.getBestMove("C:\\Users\\jerem\\git\\Projet-Developpement-Echecs\\bot-echecs\\main.py",gameEngine);
-							System.out.println(moveBot.toString());
-							MoveResult moveResultBot = gameEngine.playMove(moveBot);
-							boardfx.updateMove(gameEngine.getBoard());
+                            // Utilisez un chemin Linux ou un chemin relatif
+							String bot1Path = "/home/lucky74/Documents/Projet-Developpement-Echecs/bot-echecs/main.py";
+							Move moveBot = BotConnect.getBestMove(bot1Path, gameEngine);
+							if (moveBot != null) {
+								System.out.println(moveBot.toString());
+								MoveResult moveResultBot = gameEngine.playMove(moveBot);
+								boardfx.updateMove(gameEngine.getBoard());
+							}
+							break; // <--- MANQUANT
 							
 						case "bot_reseau_de_neurones":
-							Move moveBot2 = BotConnect.getBestMove("C:\\Users\\jerem\\git\\Projet-Developpement-Echecs\\AI\\src\\communication\\play.py",gameEngine);
-							System.out.println(moveBot2.toString());
-							MoveResult moveResultBot2 = gameEngine.playMove(moveBot2);
-							boardfx.updateMove(gameEngine.getBoard());
+                            // Utilisez un chemin Linux ou un chemin relatif
+							String bot2Path = "/home/lucky74/Documents/Projet-Developpement-Echecs/AI/src/communication/play.py";
+							Move moveBot2 = BotConnect.getBestMove(bot2Path, gameEngine);
+							if (moveBot2 != null) {
+								System.out.println(moveBot2.toString());
+								MoveResult moveResultBot2 = gameEngine.playMove(moveBot2);
+								boardfx.updateMove(gameEngine.getBoard());
+							}
+							break; // <--- MANQUANT
 					}
 					
 						
