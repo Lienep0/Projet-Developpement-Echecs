@@ -6,6 +6,7 @@ import logic.game.Position;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -26,6 +27,7 @@ public class BotConnect {
             List<String> command = new ArrayList<>();
             command.add("python3");
             command.add(path);
+            System.out.println("Script : " + Paths.get(path).toAbsolutePath());
             command.add(fen);
 
             ProcessBuilder processBuilder = new ProcessBuilder(command);
@@ -47,10 +49,13 @@ public class BotConnect {
 
             String startSquare = bestMove.substring(0, 2); // "e2"
             String endSquare = bestMove.substring(2, 4);   // "e4"
-
+            
+            System.out.println(startSquare);
+            System.out.println(endSquare);
+            
+            
             Position startPos = AlgebraicNotation.toCoordinates(startSquare);
             Position endPos = AlgebraicNotation.toCoordinates(endSquare);
-
             return new Move(startPos, endPos);
 
         } catch (Exception e) {

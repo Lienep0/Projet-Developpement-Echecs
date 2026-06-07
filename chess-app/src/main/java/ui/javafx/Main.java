@@ -2,6 +2,8 @@ package ui.javafx;
 	
 
 
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -28,6 +30,7 @@ import javafx.scene.control.ListView;
 import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
 import javafx.scene.layout.VBox;
+import logic.utils.BotConnect;
 
 
 public class Main extends Application {
@@ -40,11 +43,6 @@ public class Main extends Application {
 	
 	public void start(Stage stage) {
 
-		
-		
-		
-        
-        
         ChoiceBox<String> choiceBox = new ChoiceBox<>();
         choiceBox.getItems().addAll("classic","bot_algorithme","bot_reseau_de_neurones");
         choiceBox.setValue("classic");
@@ -104,6 +102,8 @@ public class Main extends Application {
 		Image black = new Image("black.png",2*l,l,false,false);
 		
 		
+		
+		
 		root.getChildren().add(canvas);
 		GraphicsContext gc = canvas.getGraphicsContext2D();
 
@@ -148,21 +148,39 @@ public class Main extends Application {
 					boardfx.updateMove(gameEngine.getBoard());
 					boardfx.selectedSprite=null;
 					moves = new ArrayList<>();
-					if (gameEngine.getCurrentPlayer()==Color.WHITE) {
-						gc.drawImage(white, l, -5);						
-					} else {
-						gc.drawImage(black, l, -5);
-					}
 					gc.drawImage(rouge, 0, 0);
+					
+					
+					System.out.println(boardfx.typeMatch);
+					switch (boardfx.typeMatch) {
+						case "classic":
+							if (gameEngine.getCurrentPlayer()==Color.WHITE) {
+								gc.drawImage(white, l, -5);						
+							} else {
+								gc.drawImage(black, l, -5);
+							}
+							gc.drawImage(rouge, 0, 0);
+						case "bot_algorithme":
+							Move moveBot = BotConnect.getBestMove("C:\\Users\\jerem\\git\\Projet-Developpement-Echecs\\bot-echecs\\main.py",gameEngine);
+							System.out.println(moveBot.toString());
+							MoveResult moveResultBot = gameEngine.playMove(moveBot);
+							boardfx.updateMove(gameEngine.getBoard());
+							
+						case "bot_reseau_de_neurones":
+							Move moveBot2 = BotConnect.getBestMove("C:\\Users\\jerem\\git\\Projet-Developpement-Echecs\\AI\\src\\communication\\play.py",gameEngine);
+							System.out.println(moveBot2.toString());
+							MoveResult moveResultBot2 = gameEngine.playMove(moveBot2);
+							boardfx.updateMove(gameEngine.getBoard());
+					}
+					
+						
+					
 					
 				}else {
 					boardfx.selectedSprite=null;
-					if (gameEngine.getCurrentPlayer()==Color.WHITE) {
-						gc.drawImage(white, l, -5);						
-					} else {
-						gc.drawImage(black, l, -5);
-					}
 					gc.drawImage(rouge, 0, 0);
+					
+					
 					
 				}
 			
@@ -170,7 +188,7 @@ public class Main extends Application {
 			
 		});
 		
-
+		
 		
 		AnimationTimer at = new AnimationTimer() {
 			@Override
@@ -219,6 +237,8 @@ public class Main extends Application {
 		};
 		at.start();
 	}
+	
+		
 	
 	public static Position doubleToPosition(double x, double y) {
 		return new Position((int)(x/l)*l,(int)(y/l)*l);
