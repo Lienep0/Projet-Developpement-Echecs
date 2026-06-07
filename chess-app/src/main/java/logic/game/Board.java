@@ -137,6 +137,25 @@ public class Board {
 
         Piece piece = getPieceAt(move.start);
         piece.makeMoved();
+        
+        if (piece instanceof Pawn) {
+        	if (move.start.y!=move.end.y) {
+        		int dx = move.start.x -move.end.x;
+        		
+        		Piece pieceEnd = getPieceAt(move.end);
+        		
+        		
+        		if (pieceEnd==null){
+        			System.out.print("test");
+        		
+	        		
+	        		updateArray(new Position(move.end.x + dx ,move.end.y), null);
+	        		
+        		
+        		}
+        		
+        	}
+        }
         updateArray(move.end, piece);
 
         if (piece instanceof King) {
@@ -146,7 +165,7 @@ public class Board {
                 updateBlackKingPos(move.end);
             }
         }
-
+        
         updateLastMove(move);
 
         updateArray(move.start, null);

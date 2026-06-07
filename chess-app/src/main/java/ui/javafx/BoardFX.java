@@ -92,7 +92,7 @@ public class BoardFX {
     	int b=1;
     	for (int i=0; i<8; i++) {
     		for (int j=0; j<8; j++) {
-    			a=i+1;
+    			a=i+1;	
     			b=j+1;
     			Piece piece = board[j][i];
     			if (piece!=null) {

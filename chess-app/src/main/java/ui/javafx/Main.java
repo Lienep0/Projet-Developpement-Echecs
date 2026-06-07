@@ -93,6 +93,7 @@ public class Main extends Application {
 		stage.setFullScreen(true);
 		Canvas canvas = new Canvas(L,L);
 		Image fond = new Image("echequier.png",L,L,false,false);
+		Image fondNoir = new Image("echequierNoir.png",L,L,false,false);
 		Image vert = new Image("vert.png",l,l,false,false);
 		Image rouge = new Image("rouge.png",l,l,false,false);
 		Image white = new Image("white.png",2*l,l,false,false);
@@ -113,6 +114,9 @@ public class Main extends Application {
 			double x = e.getSceneX();
 			double y = e.getSceneY();
 			Position p = doubleToPosition(x,y);
+			if (gameEngine.getCurrentPlayer()==Color.BLACK) {
+				p=new Position(p.x,9*l-p.y);
+			}
 			
 			Sprite next = boardfx.getSpriteAt((p.x)/l -1,(p.y)/l -1);
 			
@@ -157,7 +161,7 @@ public class Main extends Application {
 					gc.drawImage(rouge, 0, 0);
 					
 				}
-			System.out.println(moveResult.currentPlayer.opposite() +" to play");
+			
 			}
 			
 		});
@@ -167,11 +171,23 @@ public class Main extends Application {
 		AnimationTimer at = new AnimationTimer() {
 			@Override
 			public void handle(long lo) {
-				gc.drawImage(fond, 0, 0);
+				if (gameEngine.getCurrentPlayer()==Color.BLACK) {
+					gc.drawImage(fond, 0, 0);
+				} else {
+					gc.drawImage(fondNoir, 0, 0);
+				}
 				for (int i=0;i<8;i++) {
 		    		for (int j=0;j<8;j++) {
 		    			if (boardfx.getArray()[i][j]!=null) {
-		    				boardfx.getArray()[i][j].render(gc);
+		    				
+		    				Sprite sprite= boardfx.getArray()[i][j];
+		    				if (gameEngine.getCurrentPlayer()==Color.BLACK) {
+		    					sprite.renderBlack(gc);
+		    				} else {
+		    					sprite.render(gc);
+		    				}
+		    				
+		    				
 		    			}
 		        		
 		        	}
@@ -185,8 +201,11 @@ public class Main extends Application {
 				    int posy = pos.y;
 				    Sprite violet = new Sprite("prev.png",l);
 				    violet.setPosition((posy+1)*l, (posx+1)*l);
-				    violet.render(gc);
-				    
+				    if (gameEngine.getCurrentPlayer()==Color.BLACK) {
+    					violet.renderBlack(gc);
+    				} else {
+    					violet.render(gc);
+    				}
 				}
 
 

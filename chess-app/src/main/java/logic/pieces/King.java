@@ -31,22 +31,35 @@ public class King extends Piece {
         if (hasMoved) return false;
 
         // Roque : déplacement de deux à gauche ou deux à droite
-        if ((dx != 2 && dx != -2) || dy != 0) return false;
+        if ((dy != 2 && dy != -2) || dx != 0) return false;
 
-        int y = (color == WHITE) ? 7 : 0;
+        int x = (color == WHITE) ? 7 : 0;
 
         // Il faut que la tour n'ait pas bougé
-        Piece rook = (dx == 2) ? board.getPieceAt(new Position(7, y)) : board.getPieceAt(new Position(0, y));
-        if (!(rook instanceof Rook) || rook.getHasMoved()) return false;
+        Piece rook = (dy == 2) ? board.getPieceAt(new Position(x, 7)) : board.getPieceAt(new Position(x, 0));
+        if (!(rook instanceof Rook) || rook.getHasMoved()) {
+        	System.out.println("tour a bougé");
+        	return false;
+        	
+        }
+        
 
         // Le chemin doit être libre
-        if (!board.isPathClear(move)) return false;
+        if (!board.isPathClear(move)) {
+        	System.out.println("path no clear");
+        	return false;
+        }
+        
 
         // Le chemin ne doit pas être contrôlé par l'adversaire
-        int x = move.start.x;
-        int dir = (dx == 2) ? 1 : -1;
+        int y = move.start.y;
+        int dir = (dy == 2) ? 1 : -1;
         for (int i=0; Math.abs(i)<3; i+=dir) {
-            if (board.isAttacked(new Position(x+i, y), color)) return false;
+            if (board.isAttacked(new Position(x, y+i), color)) {
+            	System.out.println("chemin contrôlé");
+            	return false;
+            }
+            
         }
 
         return true;
