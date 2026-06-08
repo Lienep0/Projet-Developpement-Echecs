@@ -76,6 +76,7 @@ public class Main extends Application {
 		
 	}
 	private void game(String text) {
+		System.out.println("Dossier de travail actuel : " + System.getProperty("user.dir"));
 		
 		BoardFX boardfx = new BoardFX();
 		boardfx.typeMatch=text;
@@ -152,34 +153,53 @@ public class Main extends Application {
 					
 					
 					System.out.println(boardfx.typeMatch);
+					System.out.println("[DEBUG] Mode de jeu détecté : " + boardfx.typeMatch);
 					switch (boardfx.typeMatch) {
 						case "classic":
 							if (gameEngine.getCurrentPlayer() == Color.WHITE) {
-								gc.drawImage(white, l, -5);						
+								gc.drawImage(white, l, -5);
 							} else {
 								gc.drawImage(black, l, -5);
 							}
 							gc.drawImage(rouge, 0, 0);
-							break; // <--- MANQUANT
+							break;
 
 						case "bot_algorithme":
-							String bot1Path = "../../../../../bot-echecs/main.py";
-							Move moveBot = BotConnect.getBestMove(bot1Path, gameEngine);
-							if (moveBot != null) {
-								System.out.println(moveBot.toString());
-								MoveResult moveResultBot = gameEngine.playMove(moveBot);
-								boardfx.updateMove(gameEngine.getBoard());
-							}
+							String bot1Path = "../bot-echecs/main.py";
+
+							// thread en arrière-plan pour ne pas bloquer la fenêtre JavaFX
+							new Thread(() -> {
+								System.out.println("[JAVAFX] [THREAD] Appel de BotConnect en arrière-plan...");
+								Move moveBot = BotConnect.getBestMove(bot1Path, gameEngine);
+								javafx.application.Platform.runLater(() -> {
+									if (moveBot != null) {
+										System.out.println("[JAVAFX] Succès ! Coup reçu du bot : " + moveBot.toString());
+										gameEngine.playMove(moveBot);
+										boardfx.updateMove(gameEngine.getBoard());
+									} else {
+										System.out.println("[JAVAFX] Le bot_algorithme a renvoyé un coup NULL ou a mis trop de temps !");
+									}
+								});
+							}).start();
 							break;
-							
+
 						case "bot_reseau_de_neurones":
-							String bot2Path = "../../../../../AI/src/communication/play.py";
-							Move moveBot2 = BotConnect.getBestMove(bot2Path, gameEngine);
-							if (moveBot2 != null) {
-								System.out.println(moveBot2.toString());
-								MoveResult moveResultBot2 = gameEngine.playMove(moveBot2);
-								boardfx.updateMove(gameEngine.getBoard());
-							}
+							String bot2Path = "../AI/src/communication/play.py";
+
+							new Thread(() -> {
+								System.out.println("[JAVAFX] [THREAD] Appel de BotConnect en arrière-plan...");
+								Move moveBot2 = BotConnect.getBestMove(bot2Path, gameEngine);
+
+								javafx.application.Platform.runLater(() -> {
+									if (moveBot2 != null) {
+										System.out.println("[JAVAFX] Succès ! Coup reçu du bot2 : " + moveBot2.toString());
+										gameEngine.playMove(moveBot2);
+										boardfx.updateMove(gameEngine.getBoard());
+									} else {
+										System.out.println("[JAVAFX] Le bot_reseau_de_neurones a renvoyé un coup NULL !");
+									}
+								});
+							}).start();
 							break;
 					}
 					
