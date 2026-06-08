@@ -95,13 +95,15 @@ public class Main extends Application {
 		
 		stage.setResizable(true);
 		stage.setFullScreen(true);
-		Canvas canvas = new Canvas(L,L);
+		Canvas canvas = new Canvas(L*2,L);
 		Image fond = new Image("echequier.png",L,L,false,false);
 		Image fondNoir = new Image("echequierNoir.png",L,L,false,false);
 		Image vert = new Image("vert.png",l,l,false,false);
 		Image rouge = new Image("rouge.png",l,l,false,false);
 		Image white = new Image("white.png",2*l,l,false,false);
 		Image black = new Image("black.png",2*l,l,false,false);
+		Image winW = new Image("winW.png",7*l,4*l,false,false);
+		Image winB = new Image("winB.png",7*l,4*l,false,false);
 		
 		
 		
@@ -116,6 +118,8 @@ public class Main extends Application {
 		button.setLayoutY(8*l);
         button.setOnAction(e -> {
             System.out.println("reset");
+            gameEngine = new GameEngine();
+        	moves = new ArrayList<>();
 
             
             stage.close();
@@ -167,6 +171,14 @@ public class Main extends Application {
 					
 					
 					System.out.println(boardfx.typeMatch);
+					if (moveResult.winner == Color.WHITE) {
+						System.out.println("victoire");
+						gc.drawImage(winW, 9*l, 2*l);
+					}else { if (moveResult.winner == Color.BLACK) {
+						System.out.println("victoire");
+						gc.drawImage(winB, 9*l, 2*l);
+						}
+					}
 					System.out.println("[DEBUG] Mode de jeu détecté : " + boardfx.typeMatch);
 					switch (boardfx.typeMatch) {
 						case "classic":

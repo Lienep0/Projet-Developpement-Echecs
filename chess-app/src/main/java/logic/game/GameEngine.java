@@ -5,10 +5,13 @@
 package logic.game;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 import logic.exceptions.OutOfBoardException;
 import logic.pieces.*;
+import ui.javafx.Sprite;
+
 import static logic.game.Color.*;
 
 public class GameEngine {
@@ -113,13 +116,15 @@ public class GameEngine {
             	return new MoveResult(false, "putPlayerInCheck", board, currentPlayer, null);
             }
         }
-
+        this.board = newBoard;
+        this.currentPlayer = opponent;
         // Vérifier si le coup aboutit à une position finale
         boolean opponentCanMove = hasPossibleMoves(opponent, newBoard);
         boolean opponentInCheck = newBoard.isAttacked(
                 (opponent == WHITE) ? newBoard.getWhiteKingPos() : newBoard.getBlackKingPos(),
                 opponent
         );
+        
         if (!opponentCanMove) {
             if (opponentInCheck) {
             	System.out.println("checkmate");
@@ -138,8 +143,8 @@ public class GameEngine {
 
         // Sinon, valider le coup et renvoyer l'état actuel du jeu
         
-        this.board = newBoard;
-        this.currentPlayer = opponent;
+        
+        
         return new MoveResult(true, "", newBoard, opponent, null);
         
     }
@@ -191,8 +196,10 @@ public class GameEngine {
 
                 if (piece != null && piece.getColor() == player) {
                     if (!getPossibleMoves(position).isEmpty()) {
+                    	
                         return true;
                     }
+                    
                 }
 
             }
