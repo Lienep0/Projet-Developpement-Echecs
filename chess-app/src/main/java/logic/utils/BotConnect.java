@@ -25,7 +25,7 @@ public class BotConnect {
         try {
             // Commande
             List<String> command = new ArrayList<>();
-            command.add("python3");
+            command.add("/home/lucky74/pytorchvenv/bin/python3");
             command.add(path);
             System.out.println("Script : " + Paths.get(path).toAbsolutePath());
             command.add(fen);

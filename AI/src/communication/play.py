@@ -2,7 +2,9 @@ import os
 import sys
 import chess
 import torch
-sys.path.append("..")
+current_dir = os.path.dirname(os.path.abspath(__file__))
+src_dir = os.path.dirname(current_dir)
+sys.path.append(src_dir)
 
 from alphazero.inference_network import AI
 from verify import Verify
