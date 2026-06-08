@@ -76,6 +76,7 @@ public class Main extends Application {
 		
 	}
 	private void game(String text) {
+		
 		System.out.println("Dossier de travail actuel : " + System.getProperty("user.dir"));
 		
 		BoardFX boardfx = new BoardFX();
@@ -108,11 +109,24 @@ public class Main extends Application {
 		root.getChildren().add(canvas);
 		GraphicsContext gc = canvas.getGraphicsContext2D();
 
+		Button button = new Button("Reset");
+		button.setPrefWidth(l);
+		button.setPrefHeight(l);
+		button.setLayoutX(14*l);
+		button.setLayoutY(8*l);
+        button.setOnAction(e -> {
+            System.out.println("reset");
+
+            
+            stage.close();
+            start(stage);
+        }); 
 		
-		
-		
+		root.getChildren().add(button);
 		stage.setScene(scene);
 		stage.show();
+		
+		
 		
 		moves = new ArrayList<>();
 		canvas.setOnMouseClicked(e -> {
