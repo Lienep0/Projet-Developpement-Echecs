@@ -137,7 +137,7 @@ public class Main extends Application {
 			double x = e.getSceneX();
 			double y = e.getSceneY();
 			Position p = doubleToPosition(x,y);
-			if (gameEngine.getCurrentPlayer()==Color.BLACK) {
+			if ((gameEngine.getCurrentPlayer()==Color.BLACK) && (boardfx.typeMatch=="classic")){
 				p=new Position(p.x,9*l-p.y);
 			}
 			
@@ -249,22 +249,29 @@ public class Main extends Application {
 		AnimationTimer at = new AnimationTimer() {
 			@Override
 			public void handle(long lo) {
-				if (gameEngine.getCurrentPlayer()==Color.BLACK) {
+				if (boardfx.typeMatch=="classic") {
+					if (gameEngine.getCurrentPlayer()==Color.BLACK) {
+						gc.drawImage(fond, 0, 0);
+					} else {
+						gc.drawImage(fondNoir, 0, 0);
+					}
+				}else {
 					gc.drawImage(fond, 0, 0);
-				} else {
-					gc.drawImage(fondNoir, 0, 0);
 				}
 				for (int i=0;i<8;i++) {
 		    		for (int j=0;j<8;j++) {
 		    			if (boardfx.getArray()[i][j]!=null) {
 		    				
 		    				Sprite sprite= boardfx.getArray()[i][j];
-		    				if (gameEngine.getCurrentPlayer()==Color.BLACK) {
-		    					sprite.renderBlack(gc);
+		    				if (boardfx.typeMatch=="classic") {
+			    				if (gameEngine.getCurrentPlayer()==Color.BLACK) {
+			    					sprite.renderBlack(gc);
+			    				} else {
+			    					sprite.render(gc);
+			    				}
 		    				} else {
 		    					sprite.render(gc);
 		    				}
-		    				
 		    				
 		    			}
 		        		
