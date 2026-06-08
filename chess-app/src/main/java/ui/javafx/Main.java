@@ -163,26 +163,24 @@ public class Main extends Application {
 							break; // <--- MANQUANT
 
 						case "bot_algorithme":
-                            // Utilisez un chemin Linux ou un chemin relatif
-							String bot1Path = "/home/lucky74/Documents/Projet-Developpement-Echecs/bot-echecs/main.py";
+							String bot1Path = "../../../../../bot-echecs/main.py";
 							Move moveBot = BotConnect.getBestMove(bot1Path, gameEngine);
 							if (moveBot != null) {
 								System.out.println(moveBot.toString());
 								MoveResult moveResultBot = gameEngine.playMove(moveBot);
 								boardfx.updateMove(gameEngine.getBoard());
 							}
-							break; // <--- MANQUANT
+							break;
 							
 						case "bot_reseau_de_neurones":
-                            // Utilisez un chemin Linux ou un chemin relatif
-							String bot2Path = "/home/lucky74/Documents/Projet-Developpement-Echecs/AI/src/communication/play.py";
+							String bot2Path = "../../../../../AI/src/communication/play.py";
 							Move moveBot2 = BotConnect.getBestMove(bot2Path, gameEngine);
 							if (moveBot2 != null) {
 								System.out.println(moveBot2.toString());
 								MoveResult moveResultBot2 = gameEngine.playMove(moveBot2);
 								boardfx.updateMove(gameEngine.getBoard());
 							}
-							break; // <--- MANQUANT
+							break;
 					}
 					
 						

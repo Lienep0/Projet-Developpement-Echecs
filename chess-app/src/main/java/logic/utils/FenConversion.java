@@ -55,22 +55,22 @@ public class FenConversion {
 
         // Possibilités de roque
         boolean atLeastOneCastle = false;
-        if (!board[7][4].getHasMoved()) { // Roi blanc
-            if (!board[7][7].getHasMoved()) { // Tour blanche droite
+        if (board[7][4] != null && !board[7][4].getHasMoved()) { // Roi blanc
+            if (board[7][7] != null && !board[7][7].getHasMoved()) { // Tour blanche droite
                 result = result.concat("K");
                 atLeastOneCastle = true;
             }
-            if (!board[7][0].getHasMoved()) { // Tour blanche gauche
+            if (board[7][0] != null && !board[7][0].getHasMoved()) { // Tour blanche gauche
                 result = result.concat("Q");
                 atLeastOneCastle = true;
             }
         }
-        if (!board[0][4].getHasMoved()) { // Roi noir
-            if (!board[0][7].getHasMoved()) { // Tour noire droite
+        if (board[0][4] != null && !board[0][4].getHasMoved()) { // Roi noir
+            if (board[0][7] != null && !board[0][7].getHasMoved()) { // Tour noire droite
                 result = result.concat("k");
                 atLeastOneCastle = true;
             }
-            if (!board[0][0].getHasMoved()) { // Tour noire gauche
+            if (board[0][0] != null && !board[0][0].getHasMoved()) { // Tour noire gauche
                 result = result.concat("q");
                 atLeastOneCastle = true;
             }

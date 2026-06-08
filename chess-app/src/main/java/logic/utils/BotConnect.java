@@ -47,8 +47,8 @@ public class BotConnect {
                 System.err.println("Erreur Python : " + exitCode);
             }
 
-            String startSquare = bestMove.substring(0, 2); // "e2"
-            String endSquare = bestMove.substring(2, 4);   // "e4"
+            String startSquare = bestMove.substring(0, 2);
+            String endSquare = bestMove.substring(2, 4);
             
             System.out.println(startSquare);
             System.out.println(endSquare);
