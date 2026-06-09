@@ -36,17 +36,3 @@ public:
 	}
 
 };
-
-
-Tensor relu(Tensor input) {
-	Tensor result(input.dimensions, input.ndim);
-	for (int i = 0; i < input.dimensions[0]; i++) {
-		result.data[i] = max(0.0f, input.data[i * input.strides[0]]);
-	}
-	return result;
-}
-
-__global__ void relud(float* input) {
-	printf("Thread %d: Original value: %f\n", threadIdx.x, input[threadIdx.x]);
-	input[threadIdx.x] = max(0.0f, input[threadIdx.x]);
-}

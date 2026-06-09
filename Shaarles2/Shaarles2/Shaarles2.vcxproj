@@ -15,6 +15,7 @@
     <ClCompile Include="Linear.cu" />
     <ClCompile Include="main.cu" />
     <ClCompile Include="main2.cu" />
+    <ClCompile Include="main3Conv2dTest.cu" />
     <ClCompile Include="Module.cu" />
     <ClCompile Include="Network.cu" />
     <ClCompile Include="SoftMax.cu" />

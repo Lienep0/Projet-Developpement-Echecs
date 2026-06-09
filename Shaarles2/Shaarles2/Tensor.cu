@@ -58,6 +58,8 @@ public:
 		for (int i = 0; i < nbEle; i++) {
 			data[i] = static_cast<float>(rand()) / static_cast<float>(RAND_MAX);
 		}
+
+		err = cudaMemcpy(dev_data, data, nbEle * sizeof(float), cudaMemcpyHostToDevice);
 		cout << "Initialized tensor with random values" << endl;
 	}
 

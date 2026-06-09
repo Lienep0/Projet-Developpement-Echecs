@@ -23,7 +23,7 @@ __global__ void addd(float* dev_data_a, float* dev_data_b, float* dev_data_resul
 	dev_data_result[threadIdx.x] = dev_data_a[threadIdx.x] + dev_data_b[threadIdx.x];
 }
 
-class Linear {
+class Linear :  public Module{
 	private:
 	Tensor weights;
 public:
@@ -67,6 +67,18 @@ public:
 		cudaDeviceSynchronize();
 
 		cudaMemcpy(output.data, output.dev_data, output.nbEle * sizeof(float), cudaMemcpyDeviceToHost);
+	}
+
+	void gradW(const Tensor& input, const Tensor& grad_output, Tensor& grad_weights) {
+
+	}
+
+	void gradB(const Tensor& input, const Tensor& grad_output, Tensor& grad_bias) {
+	
+	}
+
+	void gradI(const Tensor& input, const Tensor& grad_output, Tensor& grad_input) {
+
 	}
 
 	void backward(const Tensor& input, const Tensor& grad_output, Tensor& grad_input) {

@@ -47,7 +47,7 @@ public:
 			cout << "new output tensor with dimensions: [" << layers[i].bias.dimensions[0] << "] and data: " << layers[i].bias.data[0] << endl;
 			outputTensor = Tensor(layers[i].bias.dimensions, layers[i].bias.ndim);
 			cout << "Forwarding through layer " << i << " with input dimensions: [" << entryTensor.dimensions[0] << "] and output dimensions: [" << outputTensor.dimensions[0] << "]" << endl;
-			layers[i].forwardd(entryTensor, outputTensor);
+			layers[i].forward(entryTensor, outputTensor);
 			entryTensor = outputTensor;
 		}
 
