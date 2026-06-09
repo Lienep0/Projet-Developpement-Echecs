@@ -2,8 +2,7 @@ package ui.javafx;
 	
 
 
-import java.nio.file.Path;
-import java.nio.file.Paths;
+
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -18,6 +17,7 @@ import logic.game.GameEngine;
 import logic.game.Move;
 import logic.game.MoveResult;
 import logic.game.Position;
+import logic.pieces.Pawn;
 import logic.pieces.Piece;
 import javafx.scene.Group;
 import javafx.scene.Scene;
@@ -39,16 +39,19 @@ public class Main extends Application {
 	static int l = L/10;
 	GameEngine gameEngine = new GameEngine();
 	List<Move> moves = new ArrayList<>();
+	int nb_Noir = 0;
+	int nb_Blanc = 0;
 	@Override
 	
 	public void start(Stage stage) {
-
+		stage.setFullScreen(true);
         ChoiceBox<String> choiceBox = new ChoiceBox<>();
         choiceBox.getItems().addAll("classic","bot_algorithme","bot_reseau_de_neurones");
         choiceBox.setValue("classic");
-        
+        choiceBox.setStyle("-fx-font-size: 50px;");
 
         Button button = new Button("Valider");
+        button.setStyle("-fx-font-size: 30px;");
         button.setOnAction(e -> {
             String text = choiceBox.getValue();
             System.out.println("Texte saisi : " + text);
@@ -111,11 +114,12 @@ public class Main extends Application {
 		root.getChildren().add(canvas);
 		GraphicsContext gc = canvas.getGraphicsContext2D();
 
-		Button button = new Button("Reset");
-		button.setPrefWidth(l);
+		Button button = new Button("Menu");
+		button.setPrefWidth(l*2);
 		button.setPrefHeight(l);
-		button.setLayoutX(14*l);
+		button.setLayoutX(13*l);
 		button.setLayoutY(8*l);
+		button.setStyle("-fx-font-size: 40px;");
         button.setOnAction(e -> {
             System.out.println("reset");
             gameEngine = new GameEngine();
@@ -163,7 +167,7 @@ public class Main extends Application {
 				MoveResult moveResult = gameEngine.playMove(move);
 
 				if (moveResult.success==true) {
-					
+					PieceMangee(gc,next,move,boardfx);
 					boardfx.updateMove(gameEngine.getBoard());
 					boardfx.selectedSprite=null;
 					moves = new ArrayList<>();
@@ -301,7 +305,38 @@ public class Main extends Application {
 		at.start();
 	}
 	
-		
+	public void PieceMangee(GraphicsContext gc,Sprite next,Move move,BoardFX boardfx) {
+		if (next!=  null) {
+			Image piece_mangee = next.image;
+			if (gameEngine.getCurrentPlayer()==Color.BLACK) {
+				gc.drawImage(piece_mangee, 9*l+nb_Blanc*l/3, l,l/2,l/2);
+				nb_Blanc++;
+			} else {
+				gc.drawImage(piece_mangee, 9*l+nb_Noir*l/3, 7*l,l/2,l/2);
+				nb_Noir++;
+			}
+			
+		}else { if (gameEngine.getBoard()[move.end.x][move.end.y] instanceof Pawn) {
+        	if (move.start.y!=move.end.y) {
+        		int dx = move.start.x -move.end.x;
+        		System.out.println(move.end.x + dx);
+        		System.out.println(move.end.y);
+        		
+        		Image piece_mangee_en_passant = boardfx.getSpriteAt(move.end.y ,move.end.x+dx).image;
+        		
+        		if (gameEngine.getCurrentPlayer()==Color.BLACK) {
+					gc.drawImage(piece_mangee_en_passant, 9*l+nb_Blanc*l/3, l,l/2,l/2);
+					nb_Blanc++;
+				} else {
+					gc.drawImage(piece_mangee_en_passant, 9*l+nb_Noir*l/3, 7*l,l/2,l/2);
+					nb_Noir++;
+				}
+        		      			
+        	}
+        }
+			
+		}
+	}
 	
 	public static Position doubleToPosition(double x, double y) {
 		return new Position((int)(x/l)*l,(int)(y/l)*l);

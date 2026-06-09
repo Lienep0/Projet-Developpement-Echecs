@@ -26,7 +26,7 @@ public class BotConnect {
         try {
             // Commande
             List<String> command = new ArrayList<>();
-            command.add("/home/anselme/TSP/Projet-Developpement-Echecs/venv-chess-ai/bin/python3");
+            command.add("C:\\Users\\jerem\\git\\Projet-Developpement-Echecs\\venv-chess-ai\\bin\\python3");
             command.add(Paths.get(path).toAbsolutePath().toString());
             System.out.println("[BOTCONNECT] Exécution du script : " + Paths.get(path).toAbsolutePath());
             command.add(fen);
