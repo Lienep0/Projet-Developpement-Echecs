@@ -6,7 +6,7 @@
 
 
 class Module {
-private:
+protected://enables access to derived classes -> had problem when it was private in  BatchNorm2D where it's particularly useful so :(
 	bool training = true;
 
 public:

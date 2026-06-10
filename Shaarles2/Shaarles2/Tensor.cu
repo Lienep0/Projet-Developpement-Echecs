@@ -9,6 +9,20 @@
 
 using namespace std;
 
+__global__ void zero(float* data, int size) {
+	int idx = blockIdx.x * blockDim.x + threadIdx.x;
+	if (idx < size) {
+		data[idx] = 0.0f;
+	}
+}
+
+__global__ void one(float* data, int size) {
+	int idx = blockIdx.x * blockDim.x + threadIdx.x;
+	if (idx < size) {
+		data[idx] = 1.0f;
+	}
+}
+
 class Tensor {
 	//2D and 3D tensors are the only ones we need for our network
 
@@ -20,7 +34,11 @@ public:
 	float* dev_data = nullptr; //for GPU tensors
 	int nbEle;
 
+
+
 	Tensor(int dimensions[], int ndim) {
+		//Constructor for nD tensors, the random initialization is only for weights and bias but I implemented it here for simplicity
+
 
 		cout << "Incoming dims: ";
 		for (int i = 0; i < ndim; i++)
@@ -64,7 +82,10 @@ public:
 	}
 
 
+	
 	Tensor(float* dataT, int size) {
+		//Constructor(?) for tensors with datas, size as an argument is for convenience, it didn't always work to compute it
+
 		this->ndim = 1;
 		this->dimensions = new int[1];
 		this->dimensions[0] = size;
@@ -100,7 +121,9 @@ public:
 
 	}
 
+
 	Tensor() {
+		//minimal constructor
 		this->ndim = 0;
 		this->dimensions = nullptr;
 		this->strides = nullptr;
@@ -109,6 +132,7 @@ public:
 	}
 
 	Tensor(const Tensor& other) {
+		//constructor based on other Tensor instances
 		this->ndim = other.ndim;
 		this->dimensions = new int[ndim];
 		this->strides = new int[ndim];
@@ -133,6 +157,7 @@ public:
 	}
 
 	~Tensor() {
+		//destructor to free memory
 		cudaFreeHost(data);
 		cudaFree(dev_data);
 	}
@@ -207,6 +232,26 @@ public:
 			}
 		}
 		return *this;
+	}
+
+	void zero() {
+		int blockSize = 256;
+		zero <<< (nbEle + blockSize - 1) / blockSize, blockSize >>> (dev_data, nbEle);
+		cudaDeviceSynchronize();
+		cudaError_t err = cudaMemcpy(data, dev_data, nbEle * sizeof(float), cudaMemcpyDeviceToHost);
+		if (err != cudaSuccess) {
+			std::cerr << "cudaMemcpy failed for device to host copy: " << cudaGetErrorString(err) << std::endl;
+		}
+	}
+
+	void one() {
+		int blockSize = 256;
+		one <<< (nbEle + blockSize - 1) / blockSize, blockSize >>> (dev_data, nbEle);
+		cudaDeviceSynchronize();
+		cudaError_t err = cudaMemcpy(data, dev_data, nbEle * sizeof(float), cudaMemcpyDeviceToHost);
+		if (err != cudaSuccess) {
+			std::cerr << "cudaMemcpy failed for device to host copy: " << cudaGetErrorString(err) << std::endl;
+		}
 	}
 
 };

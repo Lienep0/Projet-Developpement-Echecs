@@ -107,6 +107,7 @@ public:
 		in_channels(in_channels), out_channels(out_channels), kernel_size(new int[2] {kernel_size, kernel_size}),
 		weights(new int[4] {out_channels, in_channels, this->kernel_size[0], this->kernel_size[1]}, 4),
 		bias(new int[1] {out_channels}, 1), stride(stride), padding(padding) {
+		//learn to initialize like this but I'm too lazy to change the initalization in like other classes, I'll try to do it here
 
 	}
 
