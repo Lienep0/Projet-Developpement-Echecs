@@ -159,7 +159,7 @@ public:
 
 
 			//computing batch var
-			batch_var_reduced << <grid_size, bloc_size >> > (num_features, input.dev_data, batch_var.dev_data, m, B, lasts);
+			batch_var_reduced << <grid_size, bloc_size >> > (num_features, input.dev_data, batch_var.dev_data, batch_mean.dev_data, m, B, lasts);
 			cudaDeviceSynchronize();
 
 			cuderr = cudaMemcpy(batch_var.data, batch_var.dev_data, num_features * sizeof(float), cudaMemcpyDeviceToHost);
