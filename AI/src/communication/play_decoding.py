@@ -1,10 +1,9 @@
 import chess
-import torch
 
 class PlayDecoding():
-    
-    def get_tensor_move(self, verified_tensor, board):
-        flat_idx = torch.argmax(verified_tensor).item()
+
+    def get_tensor_move(self, move, board):
+        flat_idx = move
         
         plan_idx = flat_idx // 64
         remainder = flat_idx % 64
