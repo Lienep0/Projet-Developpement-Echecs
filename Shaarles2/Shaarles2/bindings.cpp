@@ -32,18 +32,37 @@ PYBIND11_MODULE(ShAIrles, m) {
     //  Conv2D
     // -------------------------
     py::class_<Conv2D>(m, "Conv2D")
-        .def(py::init<int, int, int, int, int>(),
-            py::arg("in_channels"),
-            py::arg("out_channels"),
-            py::arg("kernel_size"),
-            py::arg("stride") = 1,
-            py::arg("padding") = 0)
+        .def(py::init<int,int,int,int,int>(), 
+             py::arg("in_channels"),
+             py::arg("out_channels"),
+             py::arg("kernel_size"),
+             py::arg("stride") = 1,
+             py::arg("padding") = 0)
         .def("forward", &Conv2D::forward)
         .def("forward_ptr", [](Conv2D& self, uintptr_t x_ptr, uintptr_t out_ptr,
-            int H, int W) {
-                float* x = ptr_from_uintptr<float>(x_ptr);
-                float* out = ptr_from_uintptr<float>(out_ptr);
-                self.forward_ptr(x, out, H, W);
-            })
+                               int H, int W) {
+            float* x = ptr_from_uintptr<float>(x_ptr);
+            float* out = ptr_from_uintptr<float>(out_ptr);
+            self.forward_ptr(x, out, H, W);
+        })
         .def_readwrite("weights", &Conv2D::weights)
         .def_readwrite("bias", &Conv2D::bias);
+
+    // -------------------------
+    //  BatchNorm2D
+    // -------------------------
+    py::class_<BatchNorm2D>(m, "BatchNorm2D")
+        .def(py::init<int, float, float>(),
+             py::arg("num_features"),
+             py::arg("eps") = 1e-5,
+             py::arg("momentum") = 0.1)
+        .def("forward", &BatchNorm2D::forward)
+        .def("forward_ptr", [](BatchNorm2D& self, uintptr_t x_ptr, uintptr_t out_ptr,
+                               int N, int C, int H, int W) {
+            float* x = ptr_from_uintptr<float>(x_ptr);
+            float* out = ptr_from_uintptr<float>(out_ptr);
+            self.forward_ptr(x, out, N, C, H, W);
+        })
+        .def_readwrite("gamma", &BatchNorm2D::gamma)
+        .def_readwrite("beta", &BatchNorm2D::beta)
+        .def_readwrite("running_mean", &

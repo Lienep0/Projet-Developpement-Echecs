@@ -9,14 +9,14 @@
 
 using namespace std;
 
-__global__ void zero(float* data, int size) {
+__global__ void zero_kernel(float* data, int size) {
 	int idx = blockIdx.x * blockDim.x + threadIdx.x;
 	if (idx < size) {
 		data[idx] = 0.0f;
 	}
 }
 
-__global__ void one(float* data, int size) {
+__global__ void one_kernel(float* data, int size) {
 	int idx = blockIdx.x * blockDim.x + threadIdx.x;
 	if (idx < size) {
 		data[idx] = 1.0f;
@@ -236,7 +236,7 @@ public:
 
 	void zero() {
 		int blockSize = 256;
-		zero <<< (nbEle + blockSize - 1) / blockSize, blockSize >>> (dev_data, nbEle);
+		zero_kernel <<< (nbEle + blockSize - 1) / blockSize, blockSize >>> (dev_data, nbEle);
 		cudaDeviceSynchronize();
 		cudaError_t err = cudaMemcpy(data, dev_data, nbEle * sizeof(float), cudaMemcpyDeviceToHost);
 		if (err != cudaSuccess) {
@@ -246,7 +246,7 @@ public:
 
 	void one() {
 		int blockSize = 256;
-		one <<< (nbEle + blockSize - 1) / blockSize, blockSize >>> (dev_data, nbEle);
+		one_kernel <<< (nbEle + blockSize - 1) / blockSize, blockSize >>> (dev_data, nbEle);
 		cudaDeviceSynchronize();
 		cudaError_t err = cudaMemcpy(data, dev_data, nbEle * sizeof(float), cudaMemcpyDeviceToHost);
 		if (err != cudaSuccess) {
