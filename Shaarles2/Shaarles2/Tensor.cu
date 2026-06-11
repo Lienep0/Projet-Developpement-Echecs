@@ -253,11 +253,10 @@ public:
 			std::cerr << "cudaMemcpy failed for device to host copy: " << cudaGetErrorString(err) << std::endl;
 		}
 	}
-
-	void sync_data(const char* from, const char* to,const size_t size) {
-		/*
+	/*
+	void sync_data(const char* from, const char* to,const size_t size) 
 		Almost the end of the project and finally thought of something that would synchronize at once rather than doing it by hand everytime lol
-		*/
+		
 
 		cudaError_t err = cudaMemcpy(to, from, size, cudaMemcpyDefault);
 		if (err != cudaSuccess) {
@@ -265,4 +264,5 @@ public:
 		}
 	}
 
+	*/
 };
