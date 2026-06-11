@@ -68,11 +68,13 @@ public:
 		max_search << <blocksPerGrid, threadsPerBlock >> > (input.dimensions[1], input.dev_data, maxc.dev_data, nullptr, nullptr, nullptr, nullptr, input.dimensions[0], input.dimensions[2]);
 		cudaDeviceSynchronize();
 
+		//synchronization so the values are on both dev and host before the next kernel
+		maxc.sync_data("dev_data", "data", maxc.dimensions[0] * sizeof(float));
+
 		int total_size = input.dimensions[0] * input.dimensions[1] * input.dimensions[2];
 		threadsPerBlock = 256;
 		blocksPerGrid = (total_size + threadsPerBlock - 1) / threadsPerBlock;
 
-		maxc.sync_data("dev_data", "data", maxc.dimensions[0] * sizeof(float));
 
 
 

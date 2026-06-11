@@ -11,6 +11,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="bindings.cpp" />
     <ClCompile Include="GeLU.cu" />
     <ClCompile Include="Linear.cu" />
     <ClCompile Include="main.cu" />
