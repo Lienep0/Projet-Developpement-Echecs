@@ -38,8 +38,10 @@ public class Main extends Application {
 	static int l = L/10;
 	GameEngine gameEngine = new GameEngine();
 	List<Move> moves = new ArrayList<>();
-	int nb_Noir = 0;
-	int nb_Blanc = 0;
+	List<Sprite> listeMangeeBlanc = new ArrayList<>();
+	List<Sprite> listeMangeeNoir = new ArrayList<>();
+	
+	
 	@Override
 	
 	public void start(Stage stage) {
@@ -106,6 +108,7 @@ public class Main extends Application {
 		Image black = new Image("black.png",2*l,l,false,false);
 		Image winW = new Image("winW.png",7*l,4*l,false,false);
 		Image winB = new Image("winB.png",7*l,4*l,false,false);
+		Image blanc = new Image("blanc.png",7*l,4*l,false,false);
 		
 		
 		
@@ -298,7 +301,36 @@ public class Main extends Application {
     					violet.render(gc);
     				}
 				}
+				gc.drawImage(blanc, 9*l+1, l);
+				gc.drawImage(blanc, 9*l+1, 7*l);
+				int nb_Noir =0;
+				Iterator<Sprite> itnoir = listeMangeeNoir.iterator();
 
+				while (itnoir.hasNext()) {
+				    Sprite sprite = itnoir.next();				    
+				    if (gameEngine.getCurrentPlayer()==Color.BLACK) {
+    					sprite.setPosition(9*l+nb_Noir*l/3, 7*l);
+    					sprite.render(gc);
+    				} else {
+    					sprite.setPosition(9*l+nb_Noir*l/3, l);
+    					sprite.render(gc);
+    				}
+				    nb_Noir++;
+				}
+				int nb_Blanc =0;
+				Iterator<Sprite> itblanc = listeMangeeBlanc.iterator();
+
+				while (itblanc.hasNext()) {
+				    Sprite sprite = itblanc.next();				    
+				    if (gameEngine.getCurrentPlayer()==Color.BLACK) {
+    					sprite.setPosition(9*l+nb_Blanc*l/3, l);
+    					sprite.render(gc);
+    				} else {
+    					sprite.setPosition(9*l+nb_Blanc*l/3, 7*l);
+    					sprite.render(gc);
+    				}
+				    nb_Blanc++;
+				}
 
 				
 				
@@ -311,11 +343,12 @@ public class Main extends Application {
 		if (next!=  null) {
 			Image piece_mangee = next.image;
 			if (gameEngine.getCurrentPlayer()==Color.BLACK) {
-				gc.drawImage(piece_mangee, 9*l+nb_Blanc*l/3, l,l/2,l/2);
-				nb_Blanc++;
+				Sprite sprite = new Sprite(piece_mangee.getUrl(),l/2);
+				listeMangeeBlanc.add(sprite);
+				
 			} else {
-				gc.drawImage(piece_mangee, 9*l+nb_Noir*l/3, 7*l,l/2,l/2);
-				nb_Noir++;
+				Sprite sprite = new Sprite(piece_mangee.getUrl(),l/2);
+				listeMangeeNoir.add(sprite);
 			}
 			
 		}else { if (gameEngine.getBoard()[move.end.x][move.end.y] instanceof Pawn) {
@@ -327,11 +360,11 @@ public class Main extends Application {
         		Image piece_mangee_en_passant = boardfx.getSpriteAt(move.end.y ,move.end.x+dx).image;
         		
         		if (gameEngine.getCurrentPlayer()==Color.BLACK) {
-					gc.drawImage(piece_mangee_en_passant, 9*l+nb_Blanc*l/3, l,l/2,l/2);
-					nb_Blanc++;
+        			Sprite sprite = new Sprite(piece_mangee_en_passant.getUrl(),l/2);
+    				listeMangeeBlanc.add(sprite);
 				} else {
-					gc.drawImage(piece_mangee_en_passant, 9*l+nb_Noir*l/3, 7*l,l/2,l/2);
-					nb_Noir++;
+					Sprite sprite = new Sprite(piece_mangee_en_passant.getUrl(),l/2);
+					listeMangeeBlanc.add(sprite);
 				}
         		      			
         	}
