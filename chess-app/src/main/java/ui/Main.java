@@ -55,7 +55,6 @@ public class Main extends Application {
         button.setStyle("-fx-font-size: 30px;");
         button.setOnAction(e -> {
             String text = choiceBox.getValue();
-            System.out.println("Texte saisi : " + text);
 
             
             stage.close();
@@ -108,6 +107,7 @@ public class Main extends Application {
 		Image black = new Image("black.png",2*l,l,false,false);
 		Image winW = new Image("winW.png",7*l,4*l,false,false);
 		Image winB = new Image("winB.png",7*l,4*l,false,false);
+		Image egalite = new Image("égalité.png",7*l,4*l,false,false);
 		Image blanc = new Image("blanc.png",7*l,4*l,false,false);
 		
 		
@@ -123,7 +123,6 @@ public class Main extends Application {
 		button.setLayoutY(8*l);
 		button.setStyle("-fx-font-size: 40px;");
         button.setOnAction(e -> {
-            System.out.println("reset");
             gameEngine = new GameEngine();
         	moves = new ArrayList<>();
 
@@ -176,14 +175,15 @@ public class Main extends Application {
 					gc.drawImage(rouge, 0, 0);
 					
 					
-					System.out.println(boardfx.typeMatch);
+
 					if (moveResult.winner == Color.WHITE) {
-						System.out.println("victoire");
 						gc.drawImage(winW, 9*l, 2*l);
 					}else { if (moveResult.winner == Color.BLACK) {
-						System.out.println("victoire");
 						gc.drawImage(winB, 9*l, 2*l);
 						}
+					}
+					if (moveResult.errorCode=="stalemate") {
+						gc.drawImage(egalite, 9*l, 2*l);
 					}
 					switch (boardfx.typeMatch) {
 						case "classic":
@@ -354,8 +354,6 @@ public class Main extends Application {
 		}else { if (gameEngine.getBoard()[move.end.x][move.end.y] instanceof Pawn) {
         	if (move.start.y!=move.end.y) {
         		int dx = move.start.x -move.end.x;
-        		System.out.println(move.end.x + dx);
-        		System.out.println(move.end.y);
         		
         		Image piece_mangee_en_passant = boardfx.getSpriteAt(move.end.y ,move.end.x+dx).image;
         		

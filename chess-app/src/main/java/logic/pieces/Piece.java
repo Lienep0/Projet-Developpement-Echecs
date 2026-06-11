@@ -39,7 +39,7 @@ public abstract class Piece {
         if (move.start.x<0 || move.start.x>7 || move.start.y<0 || move.start.y>7
             || move.end.x<0 || move.end.x>7 || move.end.y<0 || move.end.y>7
         ) {
-        	System.out.println("hors du plateau");
+        	
             throw new OutOfBoardException("Mouvement en dehors du plateau.");
         }
 
