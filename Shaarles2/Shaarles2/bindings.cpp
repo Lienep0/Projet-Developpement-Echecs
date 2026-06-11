@@ -1,9 +1,11 @@
+#include "Tensor.cu"
+#include "Conv2D.cu"
+#include "BatchNorm2D.cu"
+#include "Module.cu"
+#include "SoftMax.cu"
+#include "Linear.cu"
 #include <pybind11/pybind11.h>
 #include <pybind11/stl.h>
-#include "Tensor.hpp"
-#include "Conv2D.hpp"
-#include "BatchNorm2D.hpp"
-#include "Module.hpp"
 
 namespace py = pybind11;
 
