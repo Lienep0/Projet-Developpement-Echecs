@@ -13,8 +13,10 @@ ext_modules = [
             "bindings.cpp",
             "BatchNorm2D.cu",
             "Conv2D.cu",
-            "Tensor.cpp",
-            "Module.cpp",
+            "Tensor.cu",
+            "Module.cu",
+            "Linear.cu",
+            "SoftMax.cu"
         ],
         include_dirs=["."],
         extra_compile_args={
