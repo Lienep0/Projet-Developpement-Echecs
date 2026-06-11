@@ -1,34 +1,59 @@
-from setuptools_cuda_cpp import CUDAExtension, BuildExtension
+from distutils.ccompiler import new_compiler
+from distutils.sysconfig import customize_compiler
+
+# Add .cu to the list of known file types
+import distutils.ccompiler
+distutils.ccompiler.CCompiler.src_extensions.append('.cu')
+distutils.ccompiler.CCompiler.object_extensions.append('.cu')
+
 from setuptools import setup
-from pybind11.setup_helpers import Pybind11Extension, build_ext
-import pybind11
+from setuptools.command.build_ext import build_ext
+from pybind11.setup_helpers import Pybind11Extension
+import sys
+import os
+
+class BuildExt(build_ext):
+    def build_extensions(self):
+        ct = self.compiler.compiler_type
+        for ext in self.extensions:
+            if ct == "msvc":
+                # Flags MSVCj on Windows
+                ext.extra_compile_args = {
+                    "cxx": ["/O2", "/EHsc"],
+                    "nvcc": [
+                        "-O3",
+                        "-std=c++17",
+                        "--expt-relaxed-constexpr",
+                        "-Xcompiler=/EHsc",
+                    ]
+                }
+            else:
+                # Linux
+                ext.extra_compile_args = {
+                    "cxx": ["-O3", "-std=c++17", "-fPIC"],
+                    "nvcc": [
+                        "-O3",
+                        "-std=c++17",
+                        "--expt-relaxed-constexpr",
+                        "-Xcompiler=-fPIC",
+                    ]
+                }
+        build_ext.build_extensions(self)
 
 ext_modules = [
-    CUDAExtension(  # Utilise CUDAExtension au lieu de Pybind11Extension
+    Pybind11Extension(
         "ShAIrles",
         [
             "bindings.cpp",
-            "BatchNorm2D.cu",
-            "Conv2D.cu",
             "Tensor.cu",
-            "Module.cu",
+            "Conv2D.cu",
+            "BatchNorm2D.cu",
             "Linear.cu",
-            "SoftMax.cu"
+            "GeLU.cu",
+            "ReLU.cu",
+            "SoftMax.cu",
         ],
-        include_dirs=[
-            pybind11.get_include(),
-            pybind11.get_include(user=True),
-            "."
-        ],
-        extra_compile_args={
-            "cxx": ["-O3", "-std=c++17"],
-            "nvcc": [
-                "-O3",
-                "-std=c++17",
-                "--expt-relaxed-constexpr",
-                "-Xcompiler", "-fPIC"
-            ]
-        },
+        include_dirs=["."],
         libraries=["cudart"],
     )
 ]
@@ -36,5 +61,5 @@ ext_modules = [
 setup(
     name="ShAIrles",
     ext_modules=ext_modules,
-    cmdclass={"build_ext": BuildExtension}, # Utilise BuildExtension
+    cmdclass={"build_ext": BuildExt},
 )

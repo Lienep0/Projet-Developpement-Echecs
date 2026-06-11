@@ -14,7 +14,6 @@
     <ClCompile Include="bindings.cpp" />
     <ClCompile Include="GeLU.cu" />
     <ClCompile Include="Linear.cu" />
-    <ClCompile Include="main.cu" />
     <ClCompile Include="main2.cu" />
     <ClCompile Include="main3Conv2dTest.cu" />
     <ClCompile Include="Module.cu" />
@@ -23,6 +22,8 @@
   <ItemGroup>
     <CudaCompile Include="BatchNorm2D.cu" />
     <CudaCompile Include="Conv2D.cu" />
+    <CudaCompile Include="mainBatchNorm2dTest.cu" />
+    <CudaCompile Include="mainTestSoftMax.cu" />
     <CudaCompile Include="ReLU.cu" />
     <CudaCompile Include="Tensor.cu" />
   </ItemGroup>
@@ -38,6 +39,9 @@
     <ClInclude Include="ReLU.hpp" />
     <ClInclude Include="SoftMax.hpp" />
     <ClInclude Include="Tensor.hpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="CMakeLists.txt" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{33B50621-1012-1904-D7D0-CCDC3887A068}</ProjectGuid>

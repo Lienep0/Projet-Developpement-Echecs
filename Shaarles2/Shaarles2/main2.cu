@@ -10,8 +10,8 @@ int main() {
 	Tensor output(dimensions,2); // Create an output tensor to hold the results
 	// Fill the input tensor with some values (for testing)
 	for (int i = 0; i < 32; i++) {
-		input.data[i] = static_cast<float>(i - 8); // Values from -8 to 7
-		printf("element %d: %f\n", i, input.data[i]);
+		input.getData()[i] = static_cast<float>(i - 8); // Values from -8 to 7
+		printf("element %d: %f\n", i, input.getData()[i]);
 	}
 
 	ReLU reluModule; // Create an instance of the ReLU module
@@ -20,7 +20,7 @@ int main() {
 	printf("Output after ReLU activation:\n");
 	for (int i = 0; i < 32; i++) {
 		printf("element %d: ", i);
-		printf("%f ", output.data[i]);
+		printf("%f ", output.getData()[i]);
 		if ((i + 1) % 4 == 0) {
 			printf("\n");
 		}
@@ -30,7 +30,7 @@ int main() {
 	Tensor mask_relu = reluModule.getMask(); // Get the mask tensor from the ReLU module
 	for (int i = 0; i < 32; i++) {
 		printf("element %d: ", i);
-		printf("%f ", mask_relu.data[i]);
+		printf("%f ", mask_relu.getData()[i]);
 		if ((i + 1) % 4 == 0) {
 			printf("\n");
 		}

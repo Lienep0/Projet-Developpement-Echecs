@@ -118,7 +118,7 @@ public:
 		dim3 block(16, 16, 1);
 		dim3 grid( (out_Width + block.x - 1) / block.x,  (out_Height + block.y - 1) / block.y, out_channels *batch_size	);
 		conv2d << <grid, block >> > (
-			input.dev_data, output.dev_data, weights.dev_data, bias.dev_data, in_channels, out_channels, kernel_size[0], kernel_size[1], input.dimensions[3], input.dimensions[2], stride, padding, out_Height, out_Width);
+			input.getDevData(), output.getDevData(), weights.getDevData(), bias.getDevData(), in_channels, out_channels, kernel_size[0], kernel_size[1], input.getDimensions()[3], input.getDimensions()[2], stride, padding, out_Height, out_Width);
 
 		cudaDeviceSynchronize();
 
@@ -136,7 +136,7 @@ public:
 		dim3 block(16, 16, 1);
 		dim3 grid((out_Width + block.x - 1)  / block.x,	(out_Height + block.y - 1) / block.y,out_channels * batch_size );
 
-		conv2d_backward << <grid, block >> > (input.dev_data, gradOutput.dev_data, weights.dev_data, gradInput.dev_data, gradWeights.dev_data, gradBias.dev_data, in_channels, out_channels,kernel_size[0], kernel_size[1],width, height,	stride, padding, out_Height, out_Width);
+		conv2d_backward << <grid, block >> > (input.getDevData(), gradOutput.getDevData(), weights.getDevData(), gradInput.getDevData(), gradWeights.getDevData(), gradBias.getDevData(), in_channels, out_channels,kernel_size[0], kernel_size[1],width, height,	stride, padding, out_Height, out_Width);
 
 		cudaDeviceSynchronize();
 	}

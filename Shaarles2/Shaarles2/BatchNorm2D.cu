@@ -84,17 +84,7 @@ BatchNorm2D::BatchNorm2D(int num_features) {
 }
 
 Tensor BatchNorm2D::forward(Tensor input)  {
-	/*
-	Implementing the forward pass for batch normalization
-
-	input are assumed to be in the format(B, C, H, W, ...)
-	but for Loukka's network input are assumed to be in the format(B, C, H, W)
-		B -> the batch index
-		C -> the channel index
-		H -> the height index
-		W -> the width index
-	but just in case I'm going to make it work for any number of dimensions
-	*/
+	
 	int ndim = input.getNdim();
 
 	int B = input.getDimensions()[0];
