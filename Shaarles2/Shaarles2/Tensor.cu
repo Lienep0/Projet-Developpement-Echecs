@@ -1,11 +1,5 @@
 #pragma once
-#include "cuda_runtime.h"
-#include "device_launch_parameters.h"
-#include <cstdio>
-#include <cstdlib>
-#include <cstring>
-#include <iostream>
-#include <random>
+#include "Tensor.hpp"
 
 using namespace std;
 
@@ -26,13 +20,14 @@ __global__ void one_kernel(float* data, int size) {
 class Tensor {
 	//2D and 3D tensors are the only ones we need for our network
 
-public:
+private:
 	int ndim;
 	int* dimensions;
 	int* strides = nullptr;//kinda like coordinates?
 	float* data = nullptr;
 	float* dev_data = nullptr; //for GPU tensors
 	int nbEle;
+public:
 
 
 
@@ -253,6 +248,29 @@ public:
 			std::cerr << "cudaMemcpy failed for device to host copy: " << cudaGetErrorString(err) << std::endl;
 		}
 	}
+
+	// Getters 
+
+	int getNdim() {
+		return ndim;
+	}
+
+	int getnbEle() {
+		return nbEle;
+	}
+
+	int* getDimensions() {
+		return dimensions;
+	}
+
+	float* getData() {
+		return data;
+	}
+
+	float* getDevData() {
+		return dev_data;
+	}
+
 	/*
 	void sync_data(const char* from, const char* to,const size_t size) 
 		Almost the end of the project and finally thought of something that would synchronize at once rather than doing it by hand everytime lol

@@ -1,7 +1,4 @@
-#include <cstdio>
-#include <cstdlib>
-#include "Module.cu"
-
+#include "BatchNorm2D.hpp"
 
 //implementation of reduced batch mean, so we can use a bit of paralelization to speed up the process
 
@@ -66,156 +63,130 @@ __global__ void update_running_var(int num_features, float* running_var_data, fl
 	running_var_data[coordinate] = (1.0f - momentum) * running_var_data[coordinate] + momentum * batch_var_data[coordinate];
 }
 
-class BatchNorm2D : public Module {
+BatchNorm2D::BatchNorm2D(int num_features) {
+	// Initialize weights and bias
+	//while less compact I'm going back to this older initalization method to not add another Tensor constructor xd
 
-private:
-	//used only in inference
-	Tensor running_mean;
-	Tensor running_var;
+	this->num_features = num_features;
 
-	//used both in inference and training
-	Tensor gamma;
-	Tensor beta;
+	running_mean = Tensor(new float[num_features](), num_features);
+	running_var = Tensor(new float[num_features](), num_features);
 
+	gamma = Tensor(new float[num_features](), num_features);
+	gamma.one();
 
-	//used only in training
-	Tensor batch_mean;
-	Tensor batch_var;
+	beta = Tensor(new float[num_features](), num_features);
+	beta.zero();
 
-	int num_features;
-public:
+	batch_mean = Tensor(new float[num_features](), num_features);
+	batch_var = Tensor(new float[num_features](), num_features);
 
+}
 
-	BatchNorm2D(int num_features) {
-		// Initialize weights and bias
-		//while less compact I'm going back to this older initalization method to not add another Tensor constructor xd
+Tensor BatchNorm2D::forward(Tensor input)  {
+	/*
+	Implementing the forward pass for batch normalization
 
-		this->num_features = num_features;
+	input are assumed to be in the format(B, C, H, W, ...)
+	but for Loukka's network input are assumed to be in the format(B, C, H, W)
+		B -> the batch index
+		C -> the channel index
+		H -> the height index
+		W -> the width index
+	but just in case I'm going to make it work for any number of dimensions
+	*/
+	int ndim = input.getNdim();
 
-		running_mean = Tensor(new float[num_features](), num_features);
-		running_var = Tensor(new float[num_features](), num_features);
+	int B = input.getDimensions()[0];
+	int C = input.getDimensions()[1];
 
-		gamma = Tensor(new float[num_features](), num_features);
-		gamma.one();
-
-		beta = Tensor(new float[num_features](), num_features);
-		beta.zero();
-
-		batch_mean = Tensor(new float[num_features](), num_features);
-		batch_var = Tensor(new float[num_features](), num_features);
-
-	}
-	Tensor forward(Tensor input) override {
-		/*
-		Implementing the forward pass for batch normalization
-
-
-		input are assumed to be in the format(B, C, H, W, ...)
-		but for Loukka's network input are assumed to be in the format(B, C, H, W)
-			B -> the batch index
-			C -> the channel index
-			H -> the height index
-			W -> the width index
-			but just in case I'm going to make it work for any number of dimensions
-
-		*/
-
-		int ndim = input.ndim;
-
-		int B = input.dimensions[0];
-		int C = input.dimensions[1];
-
-		if (C != num_features) {
-			std::cerr << "Error: BatchNorm2D num_features != input channels" << std::endl;
-			exit(1);
-		}
-
-
-		//number of elements in each channel
-		int m = B;
-
-
-		for (int i = 2; i < ndim; i++) {
-			m *= input.dimensions[i];
-		}
-
-		int lasts = m / B;
-
-		//compute necessary sizes for the kernels' launch
-		int bloc_size = 256;
-		int grid_size = (num_features + bloc_size - 1) / bloc_size;
-
-		Tensor output(input.dimensions, input.ndim); // Create an output tensor with the same dimensions as input
-		if (training) {
-			//Computing batch mean 
-			batch_mean_reduced << <grid_size, bloc_size >> > (num_features, input.dev_data, batch_mean.dev_data, m, B, lasts);
-			cudaDeviceSynchronize();
-
-			cudaError_t cuderr = cudaMemcpy(batch_mean.data, batch_mean.dev_data, num_features * sizeof(float), cudaMemcpyDeviceToHost);
-			if (cuderr != cudaSuccess) {
-				std::cerr << "On host cudaMemcpy failed: " << cudaGetErrorString(cuderr) << std::endl;
-
-			}
-
-
-			//computing batch var
-			batch_var_reduced << <grid_size, bloc_size >> > (num_features, input.dev_data, batch_var.dev_data, batch_mean.dev_data, m, B, lasts);
-			cudaDeviceSynchronize();
-
-			cuderr = cudaMemcpy(batch_var.data, batch_var.dev_data, num_features * sizeof(float), cudaMemcpyDeviceToHost);
-			if (cuderr != cudaSuccess) {
-				std::cerr << "On host cudaMemcpy failed: " << cudaGetErrorString(cuderr) << std::endl;
-
-			}
-
-
-			//now normalizing the input using the batch mean and variance
-			normalization << <grid_size, bloc_size >> > (num_features, input.dev_data, output.dev_data, batch_mean.dev_data, batch_var.dev_data, gamma.dev_data, beta.dev_data, B, lasts);
-			cudaDeviceSynchronize();
-
-			cuderr = cudaMemcpy(output.data, output.dev_data, m * C * sizeof(float), cudaMemcpyDeviceToHost);
-			if (cuderr != cudaSuccess) {
-				std::cerr << "On host cudaMemcpy failed: " << cudaGetErrorString(cuderr) << std::endl;
-
-			}
-
-			//Update of running mean and running variance
-
-			update_running_mean << <grid_size, bloc_size >> > (num_features, running_mean.dev_data, batch_mean.dev_data, 0.1f);
-			cudaDeviceSynchronize();
-
-			cuderr = cudaMemcpy(running_mean.data, running_mean.dev_data, num_features * sizeof(float), cudaMemcpyDeviceToHost);
-			if (cuderr != cudaSuccess) {
-				std::cerr << "On host cudaMemcpy failed: " << cudaGetErrorString(cuderr) << std::endl;
-			}
-
-			update_running_var << <grid_size, bloc_size >> > (num_features, running_var.dev_data, batch_var.dev_data, 0.1f);
-			cudaDeviceSynchronize();
-
-			cuderr = cudaMemcpy(running_var.data, running_var.dev_data, num_features * sizeof(float), cudaMemcpyDeviceToHost);
-			if (cuderr != cudaSuccess) {
-				std::cerr << "On host cudaMemcpy failed: " << cudaGetErrorString(cuderr) << std::endl;
-			}
-		}
-		else {
-			// Use running mean and variance for normalization during inference
-
-			normalization << <grid_size, bloc_size >> > (num_features, input.dev_data, output.dev_data, running_mean.dev_data, running_var.dev_data, gamma.dev_data, beta.dev_data, B, lasts);
-			cudaDeviceSynchronize();
-
-			cudaError_t cuderr = cudaMemcpy(output.data, output.dev_data, m * C * sizeof(float), cudaMemcpyDeviceToHost);
-			if (cuderr != cudaSuccess) {
-				std::cerr << "On host cudaMemcpy failed: " << cudaGetErrorString(cuderr) << std::endl;
-			}
-		}
-		return output;
+	if (C != num_features) {
+		std::cerr << "Error: BatchNorm2D num_features != input channels" << std::endl;
+		exit(1);
 	}
 
-	void backward(Tensor input, Tensor gradOutput) override {
-		// Implement the backward pass to compute gradients for weights and bias	
+	//number of elements in each channel
+	int m = B;
+
+	for (int i = 2; i < ndim; i++) {
+		m *= input.getDimensions()[i];
 	}
 
-	bool is_training() const { return training; }
-	void set_training(bool t) { training = t; }
+	int lasts = m / B;
 
-};
+	//compute necessary sizes for the kernels' launch
+	int bloc_size = 256;
+	int grid_size = (num_features + bloc_size - 1) / bloc_size;
+
+	Tensor output(input.getDimensions(), input.getNdim()); // Create an output tensor with the same dimensions as input
+	if (training) {
+		//Computing batch mean 
+		batch_mean_reduced << <grid_size, bloc_size >> > (num_features, input.getDevData(), batch_mean.getDevData(), m, B, lasts);
+		cudaDeviceSynchronize();
+
+		cudaError_t cuderr = cudaMemcpy(batch_mean.getData(), batch_mean.getDevData(), num_features * sizeof(float), cudaMemcpyDeviceToHost);
+		if (cuderr != cudaSuccess) {
+			std::cerr << "On host cudaMemcpy failed: " << cudaGetErrorString(cuderr) << std::endl;
+
+		}
+
+
+		//computing batch var
+		batch_var_reduced << <grid_size, bloc_size >> > (num_features, input.getDevData(), batch_var.getDevData(), batch_mean.getDevData(), m, B, lasts);
+		cudaDeviceSynchronize();
+
+		cuderr = cudaMemcpy(batch_var.getData(), batch_var.getDevData(), num_features * sizeof(float), cudaMemcpyDeviceToHost);
+		if (cuderr != cudaSuccess) {
+			std::cerr << "On host cudaMemcpy failed: " << cudaGetErrorString(cuderr) << std::endl;
+
+		}
+
+		//now normalizing the input using the batch mean and variance
+		normalization << <grid_size, bloc_size >> > (num_features, input.getDevData(), output.getDevData(), batch_mean.getDevData(), batch_var.getDevData(), gamma.getDevData(), beta.getDevData(), B, lasts);
+		cudaDeviceSynchronize();
+
+		cuderr = cudaMemcpy(output.getData(), output.getDevData(), m * C * sizeof(float), cudaMemcpyDeviceToHost);
+		if (cuderr != cudaSuccess) {
+			std::cerr << "On host cudaMemcpy failed: " << cudaGetErrorString(cuderr) << std::endl;
+
+		}
+
+		//Update of running mean and running variance
+
+		update_running_mean << <grid_size, bloc_size >> > (num_features, running_mean.getDevData(), batch_mean.getDevData(), 0.1f);
+		cudaDeviceSynchronize();
+
+		cuderr = cudaMemcpy(running_mean.getData(), running_mean.getDevData(), num_features * sizeof(float), cudaMemcpyDeviceToHost);
+		if (cuderr != cudaSuccess) {
+			std::cerr << "On host cudaMemcpy failed: " << cudaGetErrorString(cuderr) << std::endl;
+		}
+
+		update_running_var << <grid_size, bloc_size >> > (num_features, running_var.getDevData(), batch_var.getDevData(), 0.1f);
+		cudaDeviceSynchronize();
+
+		cuderr = cudaMemcpy(running_var.getData(), running_var.getDevData(), num_features * sizeof(float), cudaMemcpyDeviceToHost);
+		if (cuderr != cudaSuccess) {
+			std::cerr << "On host cudaMemcpy failed: " << cudaGetErrorString(cuderr) << std::endl;
+		}
+	}
+	else {
+		// Use running mean and variance for normalization during inference
+
+		normalization << <grid_size, bloc_size >> > (num_features, input.getDevData(), output.getDevData(), running_mean.getDevData(), running_var.getDevData(), gamma.getDevData(), beta.getDevData(), B, lasts);
+		cudaDeviceSynchronize();
+
+		cudaError_t cuderr = cudaMemcpy(output.getData(), output.getDevData(), m * C * sizeof(float), cudaMemcpyDeviceToHost);
+		if (cuderr != cudaSuccess) {
+			std::cerr << "On host cudaMemcpy failed: " << cudaGetErrorString(cuderr) << std::endl;
+		}
+	}
+	return output;
+}
+
+void BatchNorm2D::backward(Tensor input, Tensor gradOutput)  {
+	// Implement the backward pass to compute gradients for weights and bias	
+}
+
+bool BatchNorm2D::is_training() const { return training; }
+
+void BatchNorm2D::set_training(bool t) { training = t; }

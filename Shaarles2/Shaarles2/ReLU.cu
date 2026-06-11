@@ -1,9 +1,5 @@
-#include <cstdio>
-#include "Tensor.cu"
-#include <cstdlib>
-#include "Module.cu"
-
-using namespace std;
+#pragma once 
+#include "ReLU.hpp"
 
 
 __global__ void reluForwardKernel(float* input, float* output, float* mask, int size) {
@@ -41,31 +37,31 @@ public:
 	Tensor forward(Tensor input) override {
 		// Implement the forward pass using the weights and bias
 		// This is a placeholder implement ation
-		Tensor output(input.dimensions, input.ndim); // Create an output tensor with the same dimensions as input
+		Tensor output(input.getDimensions(), input.getNdim()); // Create an output tensor with the same dimensions as input
 
-		new (&mask) Tensor(input.dimensions, input.ndim); // Create a mask tensor with the same dimensions as input
+		new (&mask) Tensor(input.getDimensions(), input.getNdim()); // Create a mask tensor with the same dimensions as input
 		int vec_size = 1;
-		for (int i = 0; i < input.ndim; i++) {
-			vec_size = vec_size * input.dimensions[i];
+		for (int i = 0; i < input.getNdim(); i++) {
+			vec_size = vec_size * input.getDimensions()[i];
 		}
 
 
 		
-		cudaError_t c_err = cudaMemcpy(input.dev_data, input.data, vec_size * sizeof(float), cudaMemcpyHostToDevice);
+		cudaError_t c_err = cudaMemcpy(input.getDevData(), input.getData(), vec_size * sizeof(float), cudaMemcpyHostToDevice);
 		if (c_err != cudaSuccess) {
 			std::cerr << "cudaMemcpy failed: " << cudaGetErrorString(c_err) << std::endl;
 		}
-		reluForwardKernel << <(vec_size + 255) / 256, 256 >> > (input.dev_data, output.dev_data, mask.dev_data, vec_size);
+		reluForwardKernel << <(vec_size + 255) / 256, 256 >> > (input.getDevData(), output.getDevData(), mask.getDevData(), vec_size);
 		
 		cudaDeviceSynchronize();
-		c_err = cudaMemcpy(output.data, output.dev_data, vec_size * sizeof(float), cudaMemcpyDeviceToHost);                                                                                                                                                                                                                                                                                        
+		c_err = cudaMemcpy(output.getData(), output.getDevData(), vec_size * sizeof(float), cudaMemcpyDeviceToHost);                                                                                                                                                                                                                                                                                        
 
 		if (c_err != cudaSuccess) {
 			std::cerr << "cudaMemcpy failed for output data: " << cudaGetErrorString(c_err) << std::endl;
 		}
 
 		//veryfing the mask values
-		c_err = cudaMemcpy( mask.data, mask.dev_data, vec_size * sizeof(float), cudaMemcpyDeviceToHost);
+		c_err = cudaMemcpy( mask.getData(), mask.getDevData(), vec_size * sizeof(float), cudaMemcpyDeviceToHost);
 		if (c_err != cudaSuccess) {
 			std::cerr << "cudaMemcpy failed for mask copy from device to host: " << cudaGetErrorString(c_err) << std::endl;
 		}
@@ -74,10 +70,10 @@ public:
 	}
 	void backward(Tensor input, Tensor gradOutput) override {
 		int vec_size = 1;
-		for (int i = 0; i < gradOutput.ndim; i++) {
-			vec_size = vec_size * gradOutput.dimensions[i];
+		for (int i = 0; i < gradOutput.getNdim(); i++) {
+			vec_size = vec_size * gradOutput.getDimensions()[i];
 		}
-		reluBackwardKernel << <(vec_size + 255) / 256, 256 >> > (gradOutput.dev_data, mask.dev_data, input.dev_data, vec_size);
+		reluBackwardKernel << <(vec_size + 255) / 256, 256 >> > (gradOutput.getDevData(), mask.getDevData(), input.getDevData(), vec_size);
 	}
 
 	void forwardd(Tensor input) override {

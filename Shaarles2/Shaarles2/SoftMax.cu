@@ -1,9 +1,6 @@
-#include <cstdio>
-#include "Tensor.cu"
-#include <cstdlib>
-#include "Module.cu"
+#pragma once
+#include "SoftMax.hpp"
 
-using namespace std;
 
 
 //implementation of a kind of reduced max, not the most efficient
@@ -61,15 +58,16 @@ public:
 	Tensor forward(Tensor input) {
 		//input is of shape (B, num_features, lasts)
 		//output is of shape (B, num_features, lasts)
-		Tensor output(input.dimensions, input.ndim);
-		maxc = Tensor(&input.dimensions[1], 1);
+		Tensor output(input.getDimensions(), input.getNdim());
+		maxc = Tensor(&input.getDimensions()[1], 1);
 		int threadsPerBlock = 256;
-		int blocksPerGrid = (input.dimensions[1] + threadsPerBlock - 1) / threadsPerBlock;
-		max_search << <blocksPerGrid, threadsPerBlock >> > (input.dimensions[1], input.dev_data, maxc.dev_data, nullptr, nullptr, nullptr, nullptr, input.dimensions[0], input.dimensions[2]);
+		int blocksPerGrid = (input.getDimensions()[1] + threadsPerBlock - 1) / threadsPerBlock;
+		max_search << <blocksPerGrid, threadsPerBlock >> > (input.getDimensions()[1], input.getDevData(), maxc.getDevData(), nullptr, nullptr, nullptr, nullptr, input.getDimensions()[0], input.getDimensions()[2]);
 		cudaDeviceSynchronize();
 
+		cudaError_t err = cudaMemcpy(maxc.getDevData(), maxc.getData(), maxc.getnbEle() * sizeof(float), cudaMemcpyDeviceToDevice);
 
-		int total_size = input.dimensions[0] * input.dimensions[1] * input.dimensions[2];
+		int total_size = input.getDimensions()[0] * input.getDimensions()[1] * input.getDimensions()[2];
 		threadsPerBlock = 256;
 		blocksPerGrid = (total_size + threadsPerBlock - 1) / threadsPerBlock;
 
