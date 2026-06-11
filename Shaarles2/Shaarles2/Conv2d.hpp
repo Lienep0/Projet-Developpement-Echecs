@@ -4,3 +4,4 @@
 #include <cstdlib>
 #include <cublas.h>
 
+using namespace std;

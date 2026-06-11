@@ -33,11 +33,11 @@ public:
 
 	Tensor forward(Tensor input) override {
 		this->input = input.copy();
-		Tensor output(input.dimensions, input.ndim);
+		Tensor output(input.getDimensions(), input.getNdim());
 		int blockSize = 256;
-		int numBlocks = (input.nbEle + blockSize - 1) / blockSize;
-		gelu<<<numBlocks, blockSize>>>(input.dev_data, output.dev_data, input.nbEle);
-		cudaError_t c_err = cudaMemcpy(output.data, output.dev_data, input.nbEle * sizeof(float), cudaMemcpyDeviceToHost);
+		int numBlocks = (input.getnbEle() + blockSize - 1) / blockSize;
+		gelu<<<numBlocks, blockSize>>>(input.getDevData(), output.getDevData(), input.getnbEle());
+		cudaError_t c_err = cudaMemcpy(output.getData(), output.getDevData(), input.getnbEle() * sizeof(float), cudaMemcpyDeviceToHost);
 		if (c_err != cudaSuccess) {
 			std::cerr << "cudaMemcpy failed: " << cudaGetErrorString(c_err) << std::endl;
 		}
@@ -45,11 +45,11 @@ public:
 	}
 
 	void backward(Tensor input,Tensor gradOutput) override {
-		Tensor gradInput(input.dimensions, input.ndim);
+		Tensor gradInput(input.getDimensions(), input.getNdim());
 		int blockSize = 256;
-		int numBlocks = (input.nbEle + blockSize - 1) / blockSize;
-		sqrt<<<numBlocks, blockSize>>>(input.dev_data, gradInput.dev_data, input.nbEle);
-		cudaError_t c_err = cudaMemcpy(gradInput.data, gradInput.dev_data, input.nbEle * sizeof(float), cudaMemcpyDeviceToHost);
+		int numBlocks = (input.getnbEle() + blockSize - 1) / blockSize;
+		sqrt<<<numBlocks, blockSize>>>(input.getDevData(), gradInput.getDevData(), input.getnbEle());
+		cudaError_t c_err = cudaMemcpy(gradInput.getData(), gradInput.getDevData(), input.getnbEle() * sizeof(float), cudaMemcpyDeviceToHost);
 		if (c_err != cudaSuccess) {
 			std::cerr << "cudaMemcpy failed: " << cudaGetErrorString(c_err) << std::endl;
 		}

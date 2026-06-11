@@ -3,3 +3,5 @@
 #include "Tensor.cu"
 #include <cstdlib>
 #include "Module.cu"
+
+using namespace std;

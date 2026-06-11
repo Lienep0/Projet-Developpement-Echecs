@@ -1,11 +1,5 @@
 #pragma once
-#include <functional>
-#include "cuda_runtime.h"
-#include "device_launch_parameters.h"
-#include "Module.cu"
-
-
-using namespace std;
+#include "Linear.hpp"
 
 __global__ void multiply21(float* dev_data_a, float* dev_datab, float* dev_data_result, int dimensions1_a, int strides_a_0, int strides_a_1, int strides_b_0) {
 	//Assuming it's 2d*1D (a*b)
@@ -36,7 +30,7 @@ public:
 
 
 		this->weights = Tensor(weights_dimension, 2);
-		cout << "Initialized weights tensor :[" << weights.dimensions[0] << ", " << weights.dimensions[1] << "]" << endl;
+		cout << "Initialized weights tensor :[" << weights.getDimensions()[0] << ", " << weights.getDimensions()[1] << "]" << endl;
 
 		this->bias = Tensor(bias_dimension, 1);
 	}
@@ -55,18 +49,18 @@ public:
 
 
 	void forward(const Tensor& input, Tensor& output) {
-		cout << "device forward called with input dimensions: " << input.dimensions[0] << " and output dimensions: " << output.dimensions[0] << endl;
-		cout << output.dimensions[0] << " " << output.ndim << endl;
-		cout << bias.dimensions[0] << " " << bias.ndim << endl;
-		Tensor result(output.dimensions, output.ndim);
-		cout << "Launching kernel with " << this->weights.dimensions[0] << " threads" << endl;
-		multiply21 << <1, bias.dimensions[0] >> > (weights.dev_data, input.dev_data, result.dev_data, weights.dimensions[1], weights.strides[0], weights.strides[1], bias.strides[0]);
+		cout << "device forward called with input dimensions: " << input.getDimensions()[0] << " and output dimensions: " << output.getDimensions()[0] << endl;
+		cout << output.getDimensions()[0] << " " << output.getNdim() << endl;
+		cout << bias.getDimensions()[0] << " " << bias.getNdim() << endl;
+		Tensor result(output.getDimensions(), output.getNdim());
+		cout << "Launching kernel with " << this->weights.getDimensions()[0] << " threads" << endl;
+		multiply21 << <1, bias.getDimensions()[0] >> > (weights.getDevData(), input.getDevData(), result.getDevData(), weights.getDimensions()[1], weights.getStrides()[0], weights.getStrides()[1], bias.getStrides()[0]);
 		cudaDeviceSynchronize();
 		cout << "Finished multiplying, now adding bias" << endl;
-		addd << <1, bias.dimensions[0] >> > (result.dev_data, this->bias.dev_data, output.dev_data);
+		addd << <1, bias.getDimensions()[0] >> > (result.getDevData(), this->bias.getDevData(), output.getDevData());
 		cudaDeviceSynchronize();
 
-		cudaMemcpy(output.data, output.dev_data, output.nbEle * sizeof(float), cudaMemcpyDeviceToHost);
+		cudaMemcpy(output.getData(), output.getDevData(), output.getnbEle() * sizeof(float), cudaMemcpyDeviceToHost);
 	}
 
 	void gradW(const Tensor& input, const Tensor& grad_output, Tensor& grad_weights) {

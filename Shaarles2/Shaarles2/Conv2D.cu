@@ -122,7 +122,7 @@ public:
 
 		cudaDeviceSynchronize();
 
-		cudaMemcpy(output.data, output.dev_data, output.nbEle * sizeof(float), cudaMemcpyDeviceToHost);
+		cudaMemcpy(output.getData(), output.getDevData(), output.getnbEle() * sizeof(float), cudaMemcpyDeviceToHost);
 
 	}
 
@@ -141,18 +141,18 @@ public:
 		cudaDeviceSynchronize();
 	}
 	float* getWeights() {
-		return weights.data;
+		return weights.getData();
 	}
 
 	float* getBias() {
-		return bias.data;
+		return bias.getData();
 	}
 
 	float* getDevWeights() {
-		return weights.dev_data;
+		return weights.getDevData();
 	}
 
 	float* getDevBias() {
-		return bias.dev_data;
+		return bias.getDevData();
 	}
 };
