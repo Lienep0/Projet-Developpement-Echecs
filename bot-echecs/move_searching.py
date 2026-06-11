@@ -19,10 +19,11 @@ from constants import (
     black_king_late_table,
 )
 from helpers import hamming_weight
-import os
-import random
-import re
-from typing import List
+import time
+
+
+class SearchTimeout(Exception):
+    pass
 
 PIECE_VALUES = {
     "p": pawnvalue,
@@ -115,7 +116,10 @@ def order_moves(bitboard: Bitboard, moves: list[Move]) -> list[Move]:
         reverse=True,
     )
 
-def searchAllCaptures(bitboard: Bitboard, alpha: int, beta: int) -> int:
+def searchAllCaptures(bitboard: Bitboard, alpha: int, beta: int, deadline: float) -> int:
+    if time.time() >= deadline:
+        raise SearchTimeout()
+
     evaluation = evaluate(bitboard)
     if evaluation >= beta:
         return beta
@@ -124,11 +128,14 @@ def searchAllCaptures(bitboard: Bitboard, alpha: int, beta: int) -> int:
     moves = order_moves(bitboard, generate_legal_moves(bitboard, bitboard.active_color, only_captures=True))
 
     for move in moves:
+        if time.time() >= deadline:
+            raise SearchTimeout()
+
         undo = bitboard.make_move(move)
-
-        score = -searchAllCaptures(bitboard, -beta, -alpha)
-
-        bitboard.unmake_move(move, undo)
+        try:
+            score = -searchAllCaptures(bitboard, -beta, -alpha, deadline)
+        finally:
+            bitboard.unmake_move(move, undo)
 
         if score >= beta:
             return beta
@@ -136,9 +143,12 @@ def searchAllCaptures(bitboard: Bitboard, alpha: int, beta: int) -> int:
     
     return alpha
 
-def search(bitboard : Bitboard, depth : int, alpha : int, beta : int) -> int:
+def search(bitboard : Bitboard, depth : int, alpha : int, beta : int, deadline: float) -> int:
+    if time.time() >= deadline:
+        raise SearchTimeout()
+
     if depth == 0:
-        return searchAllCaptures(bitboard, alpha, beta)
+        return searchAllCaptures(bitboard, alpha, beta, deadline)
     
     moves = order_moves(bitboard, generate_legal_moves(bitboard, bitboard.active_color))
 
@@ -149,11 +159,14 @@ def search(bitboard : Bitboard, depth : int, alpha : int, beta : int) -> int:
         return 0
     
     for move in moves:
+        if time.time() >= deadline:
+            raise SearchTimeout()
+
         undo = bitboard.make_move(move)
-
-        score = -search(bitboard, depth - 1, -beta, -alpha)
-
-        bitboard.unmake_move(move, undo)
+        try:
+            score = -search(bitboard, depth - 1, -beta, -alpha, deadline)
+        finally:
+            bitboard.unmake_move(move, undo)
 
         if score >= beta:
             return beta
@@ -161,7 +174,7 @@ def search(bitboard : Bitboard, depth : int, alpha : int, beta : int) -> int:
 
     return alpha
 
-def select_move(bitboard: Bitboard, depth: int, alpha: int = -99999, beta: int = 99999) -> Move | None:
+def select_move(bitboard: Bitboard, depth: int, alpha: int = -99999, beta: int = 99999, deadline: float | None = None) -> Move | None:
     """
     Tries book move first (within first five moves of games),
     otherwise runs an alpha-beta search and returns the best Move.
@@ -175,9 +188,16 @@ def select_move(bitboard: Bitboard, depth: int, alpha: int = -99999, beta: int =
     best_move: Move | None = None
     ordered = order_moves(bitboard, legal_moves)
     for move in ordered:
+        if deadline is not None and time.time() >= deadline:
+            break
+
         undo = bitboard.make_move(move)
-        score = -search(bitboard, depth - 1, -beta, -alpha)
-        bitboard.unmake_move(move, undo)
+        try:
+            score = -search(bitboard, depth - 1, -beta, -alpha, deadline if deadline is not None else float('inf'))
+        except SearchTimeout:
+            break
+        finally:
+            bitboard.unmake_move(move, undo)
 
         if score > best_score:
             best_score = score

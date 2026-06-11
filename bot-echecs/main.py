@@ -7,7 +7,7 @@ import time
 def main():
     # Usage: python main.py "<FEN>" [max_seconds]
     fen = None
-    max_seconds = 3.0
+    max_seconds = 10.0
     args = sys.argv[1:]
     if len(args) >= 1:
         fen = args[0]
@@ -19,17 +19,13 @@ def main():
 
     board = Bitboard(fen) if fen else Bitboard()
 
-    start = time.time()
+    deadline = time.time() + max_seconds
     best_move = None
     depth = 1
 
     # Iterative deepening: increase depth until time runs out or a depth cap
     while True:
-        elapsed = time.time() - start
-        if elapsed >= max_seconds:
-            break
-
-        move = select_move(board, depth)
+        move = select_move(board, depth, deadline=deadline)
 
         # If search returned a move, update best_move
         if move is not None:
