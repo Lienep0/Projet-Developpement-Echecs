@@ -1,8 +1,5 @@
-#include "Tensor.cu"
-#include <cstdio>
-#include <cstdlib>
-#include <functional>
-
+#pragma once
+#include "Layer.hpp"
 
 class Layer {
 private:

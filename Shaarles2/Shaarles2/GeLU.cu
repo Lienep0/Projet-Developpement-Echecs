@@ -1,7 +1,5 @@
-#include <cstdio>
-#include "Tensor.cu"
-#include <cstdlib>
-#include "Module.cu"
+#pragma once
+#include "GeLU.hpp"
 
 using namespace std;
 

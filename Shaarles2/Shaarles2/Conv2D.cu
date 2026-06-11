@@ -1,7 +1,5 @@
-#include <cstdio>
-#include "Module.cu"
-#include <cstdlib>
-#include <cublas.h>
+#pragma once
+#include "Conv2D.hpp"
 
 //with padding and stride
 __global__ void conv2d( float* input, float* output, float* weights, float* bias, int in_channels, int out_channels, int kernel_height, int kernel_width, int input_width, int input_height,int stride, int padding, int out_Height, int out_Width) {

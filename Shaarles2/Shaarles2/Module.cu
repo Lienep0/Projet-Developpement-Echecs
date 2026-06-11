@@ -1,9 +1,4 @@
-#include "Tensor.cu"
-#include <cstdio>
-#include <cstdlib>
-#include <vector>
-#include <functional>
-
+#include "TModule.hpp"
 
 class Module {
 protected://enables access to derived classes -> had problem when it was private in  BatchNorm2D where it's particularly useful so :(
