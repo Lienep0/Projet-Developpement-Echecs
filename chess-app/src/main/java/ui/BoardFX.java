@@ -18,62 +18,14 @@ public class BoardFX {
     String typeMatch;
     
     
-    
+    //prend la taille de l'écran
     static Rectangle2D bounds = Screen.getPrimary().getBounds();
 	static int L = (int) bounds.getHeight();
 	static int l = L/10;
-
+	//initialise un boardfx
     public BoardFX() {
         spriteArray = new Sprite[8][8];
         selectedSprite =null;
-        /*
-        for (int i=0; i<8; i++) {
-        	spriteArray[i][1]=new Sprite("pion_noir.png",l);
-        	spriteArray[i][1].setPosition((i+1)*l,2*l);
-        	spriteArray[i][6]=new Sprite("pion.png",l);
-        	spriteArray[i][6].setPosition((i+1)*l,7*l);
-        }
-        spriteArray[0][0]=new Sprite("tour_noir.png",l);
-    	spriteArray[0][0].setPosition(1*l,1*l);
-    	spriteArray[7][0]=new Sprite("tour_noir.png",l);
-    	spriteArray[7][0].setPosition(8*l,1*l);
-    	spriteArray[0][7]=new Sprite("tour.png",l);
-    	spriteArray[0][7].setPosition(1*l,8*l);
-    	spriteArray[7][7]=new Sprite("tour.png",l);
-    	spriteArray[7][7].setPosition(8*l,8*l);
-    	
-    	spriteArray[1][0]=new Sprite("cheval_noir.png",l);
-    	spriteArray[1][0].setPosition(2*l,1*l);
-    	spriteArray[6][0]=new Sprite("cheval_noir.png",l);
-    	spriteArray[6][0].setPosition(7*l,1*l);
-    	spriteArray[1][7]=new Sprite("cheval.png",l);
-    	spriteArray[1][7].setPosition(2*l,8*l);
-    	spriteArray[6][7]=new Sprite("cheval.png",l);
-    	spriteArray[6][7].setPosition(7*l,8*l);
-    	
-    	spriteArray[2][0]=new Sprite("fou_noir.png",l);
-    	spriteArray[2][0].setPosition(3*l,1*l);
-    	spriteArray[5][0]=new Sprite("fou_noir.png",l);
-    	spriteArray[5][0].setPosition(6*l,1*l);
-    	spriteArray[2][7]=new Sprite("fou.png",l);
-    	spriteArray[2][7].setPosition(3*l,8*l);
-    	spriteArray[5][7]=new Sprite("fou.png",l);
-    	spriteArray[5][7].setPosition(6*l,8*l);
-    	
-    	spriteArray[3][0]=new Sprite("reine_noir.png",l);
-    	spriteArray[3][0].setPosition(4*l,1*l);
-    	spriteArray[3][7]=new Sprite("reine.png",l);
-    	spriteArray[3][7].setPosition(4*l,8*l);
-    	
-    	spriteArray[4][0]=new Sprite("roi_noir.png",l);
-    	spriteArray[4][0].setPosition(5*l,1*l);
-    	spriteArray[4][7]=new Sprite("roi.png",l);
-    	
-    	spriteArray[4][7].setPosition(5*l,8*l); */
-        
-        
-        
-        
         
         
     }
@@ -85,7 +37,7 @@ public class BoardFX {
     public Sprite[][] getArray() {
         return spriteArray;
     }
-    
+    //met à jour l'echequier apres un coup à partir de l'echequier du moteur de jeu
     public void updateMove(Piece[][] board) {
     	int a=1;
     	int b=1;
@@ -132,12 +84,5 @@ public class BoardFX {
     	}
     }
     
-    public void update() {
-    	for (int i=0;i<spriteArray.length;i++) {
-    		for (int j=0;j<spriteArray.length;j++) {
-    			spriteArray[i][j].setPosition((i+1)*l,(j+1)*l);
-        		
-        	}
-    	}
-    }
+    
 }

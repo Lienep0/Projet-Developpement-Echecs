@@ -2,7 +2,7 @@ package ui;
 	
 
 
-//test
+
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -33,6 +33,7 @@ import logic.utils.BotConnect;
 
 
 public class Main extends Application {
+	//prend la taille de l'écran
 	static Rectangle2D bounds = Screen.getPrimary().getBounds();
 	static int L = (int) bounds.getHeight();
 	static int l = L/10;
@@ -43,9 +44,12 @@ public class Main extends Application {
 	
 	
 	@Override
-	
+	//écran de sélection du mode de jeu
 	public void start(Stage stage) {
 		stage.setFullScreen(true);
+		
+		//box de choix du mode de jeu
+		
         ChoiceBox<String> choiceBox = new ChoiceBox<>();
         choiceBox.getItems().addAll("classic","bot_algorithme","bot_reseau_de_neurones");
         choiceBox.setValue("classic");
@@ -78,9 +82,12 @@ public class Main extends Application {
         
 		
 	}
+	//début de la partie dans le mode de jeu "text"
 	private void game(String text) {
 		
 		System.out.println("Dossier de travail actuel : " + System.getProperty("user.dir"));
+		
+		//setup de toutes les variables et images
 		
 		BoardFX boardfx = new BoardFX();
 		boardfx.typeMatch=text;
@@ -99,8 +106,8 @@ public class Main extends Application {
 		stage.setResizable(true);
 		stage.setFullScreen(true);
 		Canvas canvas = new Canvas(L*2,L);
-		Image fond = new Image("echequier.png",L,L,false,false);
-		Image fondNoir = new Image("echequierNoir.png",L,L,false,false);
+		Image fondNoir = new Image("echequier.png",L,L,false,false);
+		Image fond = new Image("echequierNoir.png",L,L,false,false);
 		Image vert = new Image("vert.png",l,l,false,false);
 		Image rouge = new Image("rouge.png",l,l,false,false);
 		Image white = new Image("white.png",2*l,l,false,false);
@@ -108,7 +115,7 @@ public class Main extends Application {
 		Image winW = new Image("winW.png",7*l,4*l,false,false);
 		Image winB = new Image("winB.png",7*l,4*l,false,false);
 		Image egalite = new Image("égalité.png",7*l,4*l,false,false);
-		Image blanc = new Image("blanc.png",7*l,4*l,false,false);
+		Image blanc = new Image("blanc.png",7*l,l,false,false);
 		
 		
 		
@@ -116,6 +123,9 @@ public class Main extends Application {
 		root.getChildren().add(canvas);
 		GraphicsContext gc = canvas.getGraphicsContext2D();
 
+		
+		//bouton menu
+		
 		Button button = new Button("Menu");
 		button.setPrefWidth(l*2);
 		button.setPrefHeight(l);
@@ -135,11 +145,13 @@ public class Main extends Application {
 		stage.setScene(scene);
 		stage.show();
 		
-		
+		//réinitialisation de la partie
 		
 		moves = new ArrayList<>();
 		listeMangeeNoir = new ArrayList<>();
 		listeMangeeBlanc = new ArrayList<>();
+		
+		//détection de clic sur l'écran
 		
 		canvas.setOnMouseClicked(e -> {
 			double x = e.getSceneX();
@@ -152,6 +164,8 @@ public class Main extends Application {
 			Sprite next = boardfx.getSpriteAt((p.x)/l -1,(p.y)/l -1);
 			
 			Sprite cur = boardfx.selectedSprite;
+			
+			//selection la piece si aucune n'est selection sinon joue le coup à partir de la piece pre-selectionnée
 			
 			if (cur==null) {
 				if (next!=null) {
@@ -188,6 +202,8 @@ public class Main extends Application {
 					if (moveResult.errorCode=="stalemate") {
 						gc.drawImage(egalite, 9*l, 2*l);
 					}
+					
+					//si le mode de jeu est contre un bot -> laisse le bot jouer
 					switch (boardfx.typeMatch) {
 						
 
@@ -235,11 +251,15 @@ public class Main extends Application {
 							}).start();
 							break;
 					}
+					
+					//affiche à qui c'est le tour
+					
 					if (gameEngine.getCurrentPlayer() == Color.WHITE) {
 						gc.drawImage(white, l, -5);
 					} else {
 						gc.drawImage(black, l, -5);
 					}
+					moves = new ArrayList<>();
 					gc.drawImage(rouge, 0, 0);
 					
 						
@@ -247,6 +267,7 @@ public class Main extends Application {
 					
 				}else {
 					boardfx.selectedSprite=null;
+					moves = new ArrayList<>();
 					gc.drawImage(rouge, 0, 0);
 					
 					
@@ -258,7 +279,7 @@ public class Main extends Application {
 		});
 		
 		
-		
+		//actualise les sprite à entre chaque coup
 		AnimationTimer at = new AnimationTimer() {
 			@Override
 			public void handle(long lo) {
@@ -342,7 +363,7 @@ public class Main extends Application {
 		};
 		at.start();
 	}
-	
+	//ajoute les pieces mangees aux diffrentes liste
 	public void PieceMangee(GraphicsContext gc,Sprite next,Move move,BoardFX boardfx) {
 		if (next!=  null) {
 			Image piece_mangee = next.image;
@@ -374,7 +395,7 @@ public class Main extends Application {
 			
 		}
 	}
-	
+	//transforme des coordonnees de souris en case de l'echequier 
 	public static Position doubleToPosition(double x, double y) {
 		return new Position((int)(x/l)*l,(int)(y/l)*l);
 	}
