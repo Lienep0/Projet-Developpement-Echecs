@@ -146,7 +146,6 @@ public class Board {
         		
         		
         		if (pieceEnd==null){
-        			System.out.print("test");
         		
 	        		
 	        		updateArray(new Position(move.end.x + dx ,move.end.y), null);

@@ -1,10 +1,9 @@
 import chess
-import torch
 
 class PlayDecoding():
-    
-    def tensor_to_uci(self, verified_tensor, board):
-        flat_idx = torch.argmax(verified_tensor).item()
+
+    def get_tensor_move(self, move, board):
+        flat_idx = move
         
         plan_idx = flat_idx // 64
         remainder = flat_idx % 64
@@ -43,4 +42,4 @@ class PlayDecoding():
             to_sq_flipped = 63 - move.to_square
             move = chess.Move(from_sq_flipped, to_sq_flipped, promotion=move.promotion)     
 
-        return move.uci()
+        return move

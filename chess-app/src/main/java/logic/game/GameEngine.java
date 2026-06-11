@@ -46,7 +46,6 @@ public class GameEngine {
         // Vérifier que la case de départ n'est pas vide
         Piece piece = board.getPieceAt(move.start);
         if (piece == null) {
-        	System.out.println("pas de pièce");
         	return new MoveResult(false, "noPiece", board, currentPlayer, null);
         }
 
@@ -59,11 +58,9 @@ public class GameEngine {
         try {
             if (!piece.isValidMove(move, board)) {
             	
-            	System.out.println("coup invalide");
             	return new MoveResult(false, "invalidMove", board, currentPlayer, null);
             }
         } catch (OutOfBoardException e) {
-        	System.out.println("out of board");
             return new MoveResult(false, "outOfBoard", board, currentPlayer, null);
         }
 
@@ -105,12 +102,10 @@ public class GameEngine {
         // Vérifier que le coup ne met pas le joueur en échec
         if (currentPlayer == WHITE) {
             if (newBoard.isAttacked(newBoard.getWhiteKingPos(), WHITE)) {
-            	System.out.println("le roi blanc est attaqué");
             	return new MoveResult(false, "putPlayerInCheck", board, currentPlayer, null);
             }
         } else {
             if (newBoard.isAttacked(newBoard.getBlackKingPos(), BLACK)) {
-            	System.out.println("le roi noir est attaqué");
             	return new MoveResult(false, "putPlayerInCheck", board, currentPlayer, null);
             }
         }
@@ -125,15 +120,12 @@ public class GameEngine {
         
         if (!opponentCanMove) {
             if (opponentInCheck) {
-            	System.out.println("checkmate");
                 return new MoveResult(true, "checkmate", newBoard, opponent, currentPlayer);
             } else {
-            	System.out.println("stalemate");
                 return new MoveResult(true, "stalemate", newBoard, opponent, currentPlayer);
             }
         }
         if (opponentInCheck) {
-        	System.out.println("check");
         	this.board = newBoard;
             this.currentPlayer = opponent;
             return new MoveResult(true, "check", newBoard, opponent, null);

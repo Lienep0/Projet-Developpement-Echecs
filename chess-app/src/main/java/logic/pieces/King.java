@@ -38,7 +38,6 @@ public class King extends Piece {
         // Il faut que la tour n'ait pas bougé
         Piece rook = (dy == 2) ? board.getPieceAt(new Position(x, 7)) : board.getPieceAt(new Position(x, 0));
         if (!(rook instanceof Rook) || rook.getHasMoved()) {
-        	System.out.println("tour a bougé");
         	return false;
         	
         }
@@ -46,7 +45,6 @@ public class King extends Piece {
 
         // Le chemin doit être libre
         if (!board.isPathClear(move)) {
-        	System.out.println("path no clear");
         	return false;
         }
         
@@ -56,7 +54,6 @@ public class King extends Piece {
         int dir = (dy == 2) ? 1 : -1;
         for (int i=0; Math.abs(i)<3; i+=dir) {
             if (board.isAttacked(new Position(x, y+i), color)) {
-            	System.out.println("chemin contrôlé");
             	return false;
             }
             

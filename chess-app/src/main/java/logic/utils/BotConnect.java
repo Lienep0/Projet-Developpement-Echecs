@@ -25,7 +25,7 @@ public class BotConnect {
 
         // Commande
         List<String> command = new ArrayList<>();
-        command.add("/home/anselme/TSP/Projet-Developpement-Echecs/venv-chess-ai/bin/python3");
+        command.add("/home/lucky74/pytorchvenv/bin/python3");
         command.add(Paths.get(path).toAbsolutePath().toString());
         command.add(fen);
 
