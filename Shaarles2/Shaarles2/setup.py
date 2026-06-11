@@ -1,4 +1,10 @@
 from setuptools_cuda_cpp import CUDAExtension, BuildExtension
+from setuptools import setup
+from setuptools.command.build_ext import build_ext
+from distutils.sysconfig import get_config_vars
+from pybind11.setup_helpers import Pybind11Extension
+import sys
+import os
 
 ext_modules = [
     CUDAExtension(  # Utilise CUDAExtension au lieu de Pybind11Extension

@@ -76,9 +76,6 @@ public:
 		blocksPerGrid = (total_size + threadsPerBlock - 1) / threadsPerBlock;
 
 
-
-
-		
 		return output;
 	}
 

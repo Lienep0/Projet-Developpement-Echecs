@@ -14,7 +14,7 @@ __global__ void multiply21(float* dev_data_a, float* dev_datab, float* dev_data_
 	for (int j = 0; j < dimensions1_a; j++) {
 		dev_data_result[threadIdx.x] += dev_data_a[threadIdx.x * strides_a_0 + j * strides_a_1] * dev_datab[j * strides_b_0];
 	}
-	
+
 }
 
 
@@ -23,18 +23,18 @@ __global__ void addd(float* dev_data_a, float* dev_data_b, float* dev_data_resul
 	dev_data_result[threadIdx.x] = dev_data_a[threadIdx.x] + dev_data_b[threadIdx.x];
 }
 
-class Linear :  public Module{
-	private:
+class Linear : public Module {
+private:
 	Tensor weights;
 public:
 
 	Tensor bias;
 	Linear(int input_size, int output_size) {
 		cout << "Initializing layer with input size " << input_size << " and output size " << output_size << endl;
-		int weights_dimension[] = {output_size, input_size};
+		int weights_dimension[] = { output_size, input_size };
 		int bias_dimension[] = { output_size };
 
-		
+
 		this->weights = Tensor(weights_dimension, 2);
 		cout << "Initialized weights tensor :[" << weights.dimensions[0] << ", " << weights.dimensions[1] << "]" << endl;
 
@@ -44,7 +44,7 @@ public:
 
 	Linear() {
 		this->weights = Tensor();
-		this->bias = Tensor(); 
+		this->bias = Tensor();
 	}
 
 
@@ -60,10 +60,10 @@ public:
 		cout << bias.dimensions[0] << " " << bias.ndim << endl;
 		Tensor result(output.dimensions, output.ndim);
 		cout << "Launching kernel with " << this->weights.dimensions[0] << " threads" << endl;
-		multiply21<<<1, bias.dimensions[0]>>>(weights.dev_data, input.dev_data, result.dev_data, weights.dimensions[1], weights.strides[0], weights.strides[1], bias.strides[0]);
+		multiply21 << <1, bias.dimensions[0] >> > (weights.dev_data, input.dev_data, result.dev_data, weights.dimensions[1], weights.strides[0], weights.strides[1], bias.strides[0]);
 		cudaDeviceSynchronize();
 		cout << "Finished multiplying, now adding bias" << endl;
-		addd<<<1, bias.dimensions[0]>>>(result.dev_data, this->bias.dev_data, output.dev_data);
+		addd << <1, bias.dimensions[0] >> > (result.dev_data, this->bias.dev_data, output.dev_data);
 		cudaDeviceSynchronize();
 
 		cudaMemcpy(output.data, output.dev_data, output.nbEle * sizeof(float), cudaMemcpyDeviceToHost);
@@ -74,7 +74,7 @@ public:
 	}
 
 	void gradB(const Tensor& input, const Tensor& grad_output, Tensor& grad_bias) {
-	
+
 	}
 
 	void gradI(const Tensor& input, const Tensor& grad_output, Tensor& grad_input) {
@@ -82,7 +82,7 @@ public:
 	}
 
 	void backward(const Tensor& input, const Tensor& grad_output, Tensor& grad_input) {
-		
+
 	}
 
 
