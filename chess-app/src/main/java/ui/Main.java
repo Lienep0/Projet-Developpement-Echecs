@@ -138,6 +138,9 @@ public class Main extends Application {
 		
 		
 		moves = new ArrayList<>();
+		listeMangeeNoir = new ArrayList<>();
+		listeMangeeBlanc = new ArrayList<>();
+		
 		canvas.setOnMouseClicked(e -> {
 			double x = e.getSceneX();
 			double y = e.getSceneY();
@@ -186,14 +189,7 @@ public class Main extends Application {
 						gc.drawImage(egalite, 9*l, 2*l);
 					}
 					switch (boardfx.typeMatch) {
-						case "classic":
-							if (gameEngine.getCurrentPlayer() == Color.WHITE) {
-								gc.drawImage(white, l, -5);
-							} else {
-								gc.drawImage(black, l, -5);
-							}
-							gc.drawImage(rouge, 0, 0);
-							break;
+						
 
 						case "bot_algorithme":
 							String bot1Path = "../bot-echecs/main.py";
@@ -210,6 +206,7 @@ public class Main extends Application {
 								javafx.application.Platform.runLater(() -> {
 									if (finalMoveBot != null) {
 										gameEngine.playMove(finalMoveBot);
+										PieceMangee(gc,boardfx.getSpriteAt(finalMoveBot.end.y,finalMoveBot.end.x),finalMoveBot,boardfx);
 										boardfx.updateMove(gameEngine.getBoard());
 									}
 								});
@@ -231,12 +228,19 @@ public class Main extends Application {
 								javafx.application.Platform.runLater(() -> {
 									if (finalMoveBot != null) {
 										gameEngine.playMove(finalMoveBot);
+										PieceMangee(gc,boardfx.getSpriteAt(finalMoveBot.end.y,finalMoveBot.end.x),finalMoveBot,boardfx);
 										boardfx.updateMove(gameEngine.getBoard());
 									}
 								});
 							}).start();
 							break;
 					}
+					if (gameEngine.getCurrentPlayer() == Color.WHITE) {
+						gc.drawImage(white, l, -5);
+					} else {
+						gc.drawImage(black, l, -5);
+					}
+					gc.drawImage(rouge, 0, 0);
 					
 						
 					
@@ -301,8 +305,8 @@ public class Main extends Application {
     					violet.render(gc);
     				}
 				}
-				gc.drawImage(blanc, 9*l+1, l);
-				gc.drawImage(blanc, 9*l+1, 7*l);
+				gc.drawImage(blanc, 9*l+10, l);
+				gc.drawImage(blanc, 9*l+10, 7*l);
 				int nb_Noir =0;
 				Iterator<Sprite> itnoir = listeMangeeNoir.iterator();
 
