@@ -1,10 +1,7 @@
-module org.example.chessapp {
+module ui {
     requires javafx.controls;
     requires javafx.fxml;
 	requires javafx.graphics;
 
-
-    opens org.example.chessapp to javafx.fxml;
-    exports org.example.chessapp;
-    exports ui.javafx;
+    exports ui;
 }

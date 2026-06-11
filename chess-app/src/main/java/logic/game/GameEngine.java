@@ -5,12 +5,10 @@
 package logic.game;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
 import logic.exceptions.OutOfBoardException;
 import logic.pieces.*;
-import ui.javafx.Sprite;
 
 import static logic.game.Color.*;
 

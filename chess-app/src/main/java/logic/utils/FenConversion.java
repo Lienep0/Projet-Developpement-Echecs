@@ -105,7 +105,7 @@ public class FenConversion {
         }
         result = result.concat(" ");
 
-        // Flemme de compter les coups, à changer si ça marche pas
+        // Inutile pour l'instant de compter les coups, à changer si ça marche pas
         result = result.concat("0 0");
 
         return result;

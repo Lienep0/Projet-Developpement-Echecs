@@ -311,13 +311,13 @@ def select_move(bitboard: Bitboard, depth: int, alpha: int = -99999, beta: int =
     if not legal_moves:
         return None
 
-    # Try book
-    book_move = get_book_move(bitboard)
-    if book_move is not None:
-        # ensure it's legal in current position
-        for m in legal_moves:
-            if m.from_sq == book_move.from_sq and m.to_sq == book_move.to_sq and m.promotion == book_move.promotion:
-                return m
+    #Try book
+    #book_move = get_book_move(bitboard)
+    #if book_move is not None:
+    #    # ensure it's legal in current position
+    #    for m in legal_moves:
+    #        if m.from_sq == book_move.from_sq and m.to_sq == book_move.to_sq and m.promotion == book_move.promotion:
+    #            return m
 
     # Fall back to search: iterate moves and pick best score
     best_score = -999999
