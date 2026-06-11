@@ -27,6 +27,9 @@
     <CudaCompile Include="ReLU.cu" />
     <CudaCompile Include="Tensor.cu" />
   </ItemGroup>
+  <ItemGroup>
+    <None Include="setup.py" />
+  </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{33B50621-1012-1904-D7D0-CCDC3887A068}</ProjectGuid>
     <RootNamespace>Shaarles2</RootNamespace>

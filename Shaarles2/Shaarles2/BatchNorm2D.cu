@@ -212,7 +212,7 @@ public:
 	}
 
 	void backward(Tensor input, Tensor gradOutput) override {
-		// Implement the backward pass to compute gradients for weights and bias
+		// Implement the backward pass to compute gradients for weights and bias	
 	}
 
 	bool is_training() const { return training; }

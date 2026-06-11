@@ -183,7 +183,7 @@ public:
 		return result;
 	}
 
-
+	
 
 	void toString() {
 		printf("Tensor with %d dimensions\n", ndim);
@@ -251,6 +251,17 @@ public:
 		cudaError_t err = cudaMemcpy(data, dev_data, nbEle * sizeof(float), cudaMemcpyDeviceToHost);
 		if (err != cudaSuccess) {
 			std::cerr << "cudaMemcpy failed for device to host copy: " << cudaGetErrorString(err) << std::endl;
+		}
+	}
+
+	void sync_data(const char* from, const char* to,const size_t size) {
+		/*
+		Almost the end of the project and finally thought of something that would synchronize at once rather than doing it by hand everytime lol
+		*/
+
+		cudaError_t err = cudaMemcpy(to, from, size, cudaMemcpyDefault);
+		if (err != cudaSuccess) {
+			std::cerr << "cudaMemcpy failed: " << cudaGetErrorString(err) << std::endl;
 		}
 	}
 

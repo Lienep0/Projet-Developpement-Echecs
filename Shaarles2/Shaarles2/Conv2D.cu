@@ -136,11 +136,7 @@ public:
 		int out_Width = 1 + (width - kernel_size[1] + 2 * padding) / stride;
 
 		dim3 block(16, 16, 1);
-		dim3 grid(
-			(out_Width + block.x - 1) / block.x,
-			(out_Height + block.y - 1) / block.y,
-			out_channels * batch_size
-		);
+		dim3 grid((out_Width + block.x - 1)  / block.x,	(out_Height + block.y - 1) / block.y,out_channels * batch_size );
 
 		conv2d_backward << <grid, block >> > (input.dev_data, gradOutput.dev_data, weights.dev_data, gradInput.dev_data, gradWeights.dev_data, gradBias.dev_data, in_channels, out_channels,kernel_size[0], kernel_size[1],width, height,	stride, padding, out_Height, out_Width);
 
