@@ -11,11 +11,7 @@ class PlayEncoding():
 
 
     def encode_pieces(self, board, entry, flip):
-            piece_types = [
-                chess.PAWN, chess.KNIGHT, chess.BISHOP,
-                chess.ROOK, chess.QUEEN, chess.KING    
-            ]
-
+            piece_types = [chess.PAWN, chess.KNIGHT, chess.BISHOP,chess.ROOK, chess.QUEEN, chess.KING    ]
             for i, j in enumerate(piece_types):
                 for square in board.pieces(j, chess.WHITE):
                     row, col = divmod(square, 8)
@@ -24,7 +20,6 @@ class PlayEncoding():
                         col = 7 - col
                     idx = i + 6 if flip else i
                     entry[idx, row, col] = 1.0
-                    
                 for square in board.pieces(j, chess.BLACK):
                     row, col = divmod(square, 8)
                     if flip: 
@@ -32,9 +27,6 @@ class PlayEncoding():
                         col = 7 - col
                     idx = i if flip else i + 6
                     entry[idx, row, col] = 1.0
-
-
-
     def fill_tactical_analysis(self, value, board, flip):
         for square in chess.SQUARES:
             row, col = divmod(square, 8)
@@ -44,8 +36,7 @@ class PlayEncoding():
             if board.is_attacked_by(board.turn, square):
                 value[21, row, col] = 1.0
             if board.is_attacked_by(not board.turn, square):
-                value[22, row, col] = 1.0
-                
+                value[22, row, col] = 1.0   
         for square in chess.SQUARES:
             piece = board.piece_at(square)
             if piece:
@@ -54,10 +45,9 @@ class PlayEncoding():
                     row = 7-row
                     col = 7-col
                 if board.is_pinned(piece.color, square):
-                    value[23, row, col] = 1.0
-                    
+                    value[23, row, col] = 1.0          
         return value
-
+    
     def update_entry(self, board):
         value = np.zeros((24, 8, 8), dtype=np.float32)
         flip = True if board.turn == chess.BLACK else False
