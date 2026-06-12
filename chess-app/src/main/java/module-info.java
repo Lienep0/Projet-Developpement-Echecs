@@ -3,5 +3,5 @@ module ui {
     requires javafx.fxml;
 	requires javafx.graphics;
 
-    exports ui;
+    exports ui.javafx;
 }
