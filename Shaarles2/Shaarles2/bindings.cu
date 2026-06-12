@@ -1,37 +1,37 @@
 #include <pybind11/pybind11.h>
 #include <pybind11/stl.h>
 
-#include "Tensor.hpp"
-#include "Conv2D.hpp"
-#include "Linear.hpp"
-#include "GeLU.hpp"
-#include "SoftMax.hpp"
-#include "BatchNorm2D.hpp"
-#include "ReLU.hpp"
-#include "Module.hpp"
+#include "Module.cu"
+#include "Tensor.cu"
+#include "Conv2D.cu"
+#include "Linear.cu"
+#include "GeLU.cu"
+#include "SoftMax.cu"
+#include "BatchNorm2D.cu"
+#include "ReLU.cu"
 
 namespace py = pybind11;
 
-// Define the Python module
-
-PYBIND11_MODULE(mylib, m) {
+PYBIND11_MODULE(ShAIrles, m) {
     m.doc() = "Mini deep learning library (C++/CUDA)";
 
     // -------------------------
-    // Module, mother of every classes
+    // Module (classe mère)
     // -------------------------
-	py::class_<Module>(m, "Module")
-		.def("forward", &Module::forward)
-		.def("backward", &Module::backward)
-		.def("parameters", &Module::parameters);
+    py::class_<Module>(m, "Module")
+        .def("forward", &Module::forward)
+        .def("backward", &Module::backward)
+        .def("parameters", &Module::parameters);
 
     // -------------------------
     // Tensor
     // -------------------------
-    py::class_<Tensor,Module>(m, "Tensor")
+    py::class_<Tensor, Module>(m, "Tensor")
         .def(py::init([](const std::vector<int>& dims) {
-        return Tensor(const_cast<int*>(dims.data()), static_cast<int>(dims.size()));
-            }))
+            return Tensor(const_cast<int*>(dims.data()), static_cast<int>(dims.size()));
+        }))
+        .def(py::init<float*, int>())
+        .def(py::init<>())
         .def("zero", &Tensor::zero)
         .def("one", &Tensor::one)
         .def("copy", &Tensor::copy)
@@ -39,23 +39,23 @@ PYBIND11_MODULE(mylib, m) {
         .def("getNdim", &Tensor::getNdim)
         .def("getnbEle", &Tensor::getnbEle)
         .def("getDimensions", [](Tensor& t) {
-        std::vector<int> dims(t.getNdim());
-        for (int i = 0; i < t.getNdim(); ++i)
-            dims[i] = t.getDimensions()[i];
-        return dims;
-            })
+            std::vector<int> dims(t.getNdim());
+            for (int i = 0; i < t.getNdim(); ++i)
+                dims[i] = t.getDimensions()[i];
+            return dims;
+        })
         .def("getData", [](Tensor& t) {
-        std::vector<float> v(t.getnbEle());
-        float* d = t.getData();
-        for (int i = 0; i < t.getnbEle(); ++i)
-            v[i] = d[i];
-        return v;
-            });
+            std::vector<float> v(t.getnbEle());
+            float* d = t.getData();
+            for (int i = 0; i < t.getnbEle(); ++i)
+                v[i] = d[i];
+            return v;
+        });
 
     // -------------------------
     // Conv2D
     // -------------------------
-    py::class_<Conv2D,Module>(m, "Conv2D")
+    py::class_<Conv2D, Module>(m, "Conv2D")
         .def(py::init<int, int, int, int, int>(),
             py::arg("in_channels"),
             py::arg("out_channels"),
@@ -83,22 +83,23 @@ PYBIND11_MODULE(mylib, m) {
     // -------------------------
     // GeLU
     // -------------------------
-    py::class_<GeLU,Module>(m, "GeLU")
+    py::class_<GeLU, Module>(m, "GeLU")
         .def(py::init<>())
-        .def("forward", &GeLU::forward);
-
+        .def("forward", &GeLU::forward)
+        .def("backward", &GeLU::backward);
 
     // -------------------------
     // ReLU
     // -------------------------
-    py::class_<ReLU,Module>(m, "ReLU")
+    py::class_<ReLU, Module>(m, "ReLU")
         .def(py::init<>())
-        .def("forward", &ReLU::forward);
+        .def("forward", &ReLU::forward)
+        .def("backward", &ReLU::backward);
 
     // -------------------------
     // SoftMax
     // -------------------------
-    py::class_<SoftMax,Module>(m, "SoftMax")
+    py::class_<SoftMax, Module>(m, "SoftMax")
         .def(py::init<int>(),
             py::arg("dim"))
         .def("forward", &SoftMax::forward);
@@ -106,7 +107,7 @@ PYBIND11_MODULE(mylib, m) {
     // -------------------------
     // BatchNorm2D
     // -------------------------
-    py::class_<BatchNorm2D,Module>(m, "BatchNorm2D")
+    py::class_<BatchNorm2D, Module>(m, "BatchNorm2D")
         .def(py::init<int>(),
             py::arg("num_features"))
         .def("forward", &BatchNorm2D::forward)

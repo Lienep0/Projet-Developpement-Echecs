@@ -212,7 +212,7 @@ Tensor& Tensor::operator=(const Tensor& other) {
 
 void Tensor::zero() {
 	int blockSize = 256;
-	zero_kernel <<< (nbEle + blockSize - 1) / blockSize, blockSize >>> (dev_data, nbEle);
+	zero_kernel << < (nbEle + blockSize - 1) / blockSize, blockSize >>> (dev_data, nbEle);
 	cudaDeviceSynchronize();
 	cudaError_t err = cudaMemcpy(data, dev_data, nbEle * sizeof(float), cudaMemcpyDeviceToHost);
 	if (err != cudaSuccess) {
@@ -222,7 +222,7 @@ void Tensor::zero() {
 
 void Tensor::one() {
 	int blockSize = 256;
-	one_kernel <<< (nbEle + blockSize - 1) / blockSize, blockSize >>> (dev_data, nbEle);
+	one_kernel << < (nbEle + blockSize - 1) / blockSize, blockSize >>> (dev_data, nbEle);
 	cudaDeviceSynchronize();
 	cudaError_t err = cudaMemcpy(data, dev_data, nbEle * sizeof(float), cudaMemcpyDeviceToHost);
 	if (err != cudaSuccess) {
