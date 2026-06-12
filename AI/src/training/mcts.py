@@ -9,7 +9,6 @@ class RunMCTS:
         self.iterations = iterations
     def run(self):
         for i in range(self.iterations):
-            print(i)
             node = self.root_mcts_node
             while node.children:
                 node = node.best_child()
@@ -26,7 +25,8 @@ class RunMCTS:
             else:
                 entry = node.encoder.encode(node.state).unsqueeze(0).to(node.device)
                 with torch.no_grad():
-                    value = node.model(entry)[1][0].item()
+                    val_preds = node.model(entry)[1][0]
+                    value = (val_preds[0] * 1.0 + val_preds[1] * 0.0 + val_preds[2] * 0.5).item()
                 node.backpropagate(value)
         choice = self.root_mcts_node.children[0]
         for child in self.root_mcts_node.children:
@@ -81,10 +81,11 @@ class MCTSNode:
             policy_tensor = self.model(entry_tensor)[0]
             policy_tensor = policy_tensor.squeeze(0)
         mask = self.verify.tensor_verify(self.state).to(self.device)
-        policy_tensor = policy_tensor*mask
-        filtered_policy_tensor = torch.nonzero(policy_tensor).squeeze()
-        for move_id in filtered_policy_tensor :
-            move = self.decoder.get_tensor_move(board, move_id.item(),board)
+        policy_tensor = (policy_tensor * mask).reshape(-1)
+        indices = torch.nonzero(policy_tensor).reshape(-1)
+        for i in range(indices.size(0)):
+            move_id = indices[i].item()
+            move = self.decoder.get_tensor_move(move_id, board)
             if move in board.legal_moves:
                 prob = policy_tensor[move_id].item()
                 new_board = board.copy()

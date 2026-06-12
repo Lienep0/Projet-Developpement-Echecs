@@ -28,7 +28,7 @@ if __name__ == "__main__":
     model.eval()
 
     root_mcts=MCTSNode(1.0,None,board.turn,fen,model,encoder,decoder,verify,device)
-    run = RunMCTS(root_mcts,10).run()
+    run = RunMCTS(root_mcts,500).run()
     final = run.state
     move_played = None
     for move in board.legal_moves:
