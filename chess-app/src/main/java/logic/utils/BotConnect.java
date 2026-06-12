@@ -13,7 +13,7 @@ import java.util.List;
 
 public class BotConnect {
 
-    static final String pathToVenv = "";
+    static final String pathToVenv = "/home/anselme/TSP/Projet-Developpement-Echecs/venv-chess-ai/bin/python3";
 
     /**
      * Appelle l'IA
