@@ -53,3 +53,4 @@ class PlayDecoding():
             move = chess.Move(f, t, promotion=move.promotion)
         
         return self.move_to_index.get(move, 0)
+    

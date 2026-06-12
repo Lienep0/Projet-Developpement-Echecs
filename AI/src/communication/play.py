@@ -15,7 +15,8 @@ from mcts import MCTSNode, RunMCTS
 
 if __name__ == "__main__":
     device = torch.device("cuda" if torch.cuda.is_available() else "mps" if torch.backends.mps.is_available() else "cpu")
-    AI_path = os.path.join(src_dir, '..','..','final_model', 'AI_weights.pth')
+    root_dir = os.path.dirname(os.path.dirname(current_dir))
+    AI_path = os.path.join(root_dir, 'final_model', 'AI_weights.pth')
     fen = sys.argv[1]
     board = chess.Board(fen)
     encoder = PlayEncoding()
