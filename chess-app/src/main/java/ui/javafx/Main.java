@@ -27,6 +27,7 @@ import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.Button;
 import javafx.scene.control.ChoiceBox;
+import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 import javafx.scene.layout.VBox;
 import logic.utils.BotConnect;
@@ -41,6 +42,7 @@ public class Main extends Application {
 	List<Move> moves = new ArrayList<>();
 	List<Sprite> listeMangeeBlanc = new ArrayList<>();
 	List<Sprite> listeMangeeNoir = new ArrayList<>();
+	int time = 10;
 	
 	
 	@Override
@@ -60,13 +62,20 @@ public class Main extends Application {
         button.setOnAction(e -> {
             String text = choiceBox.getValue();
 
-            
-            stage.close();
-            game(text);
+            if (text=="bot_algorithme") {
+            	stage.close();
+            	dropdown(stage,text);
+            	
+            }else {
+            	stage.close();
+                game(text);
+            }
+           
         }); 
 	
-    
-        VBox box = new VBox(10, choiceBox, button);
+        Label label = new Label("Choix du mode de jeu");
+        label.setStyle("-fx-font-size: 32px;");
+        VBox box = new VBox(10, label,choiceBox, button);
 
 
         box.setStyle("-fx-padding: 20; -fx-alignment: center;");
@@ -74,6 +83,45 @@ public class Main extends Application {
         Scene scene1 = new Scene(box, 800, 400);
         stage.setScene(scene1);
         stage.setTitle("choisir le mode de jeu");
+        stage.show();
+        
+
+		
+
+        
+		
+	}
+	//écran de sélection du temps de jeu du bot algorithmique
+	public void dropdown(Stage stage,String text) {
+		stage.setFullScreen(true);
+		
+		//box de choix du mode de jeu
+		
+        ChoiceBox<String> choiceBox2 = new ChoiceBox<>();
+        choiceBox2.getItems().addAll("5","10","20");
+        choiceBox2.setValue("10");
+        choiceBox2.setStyle("-fx-font-size: 50px;");
+
+        Button button = new Button("Valider");
+        button.setStyle("-fx-font-size: 30px;");
+        button.setOnAction(e -> {
+            time = Integer.valueOf(choiceBox2.getValue());
+
+           
+            stage.close();
+            game(text);
+        }); 
+	
+        Label label = new Label("Choix du temps de jeu du bot (en secondes)");
+        label.setStyle("-fx-font-size: 32px;");
+        VBox box = new VBox(10,label, choiceBox2, button);
+
+
+        box.setStyle("-fx-padding: 20; -fx-alignment: center;");
+
+        Scene scene1 = new Scene(box, 800, 400);
+        stage.setScene(scene1);
+        stage.setTitle("choisir le temps de jeu du bot");
         stage.show();
         
 
@@ -214,7 +262,7 @@ public class Main extends Application {
 							new Thread(() -> {
                                 Move moveBot = null;
                                 try {
-                                    moveBot = BotConnect.getBestMove(bot1Path, gameEngine);
+                                    moveBot = BotConnect.askBot(bot1Path, gameEngine,time);
                                 } catch (IOException ex) {
                                     throw new RuntimeException(ex);
                                 }
@@ -235,7 +283,7 @@ public class Main extends Application {
 							new Thread(() -> {
                                 Move moveBot2 = null;
                                 try {
-                                    moveBot2 = BotConnect.getBestMove(bot2Path, gameEngine);
+                                    moveBot2 = BotConnect.askAI(bot2Path, gameEngine);
                                 } catch (IOException ex) {
                                     throw new RuntimeException(ex);
                                 }
