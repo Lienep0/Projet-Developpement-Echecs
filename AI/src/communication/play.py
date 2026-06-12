@@ -10,13 +10,13 @@ from alphazero.inference_network import AI
 from verify import Verify
 from play_decoding import PlayDecoding
 from play_encoding import PlayEncoding
-from training.mcts import MCTSNode, RunMCTS
+from mcts import MCTSNode, RunMCTS
 
 
 if __name__ == "__main__":
     device = torch.device("cuda" if torch.cuda.is_available() else "mps" if torch.backends.mps.is_available() else "cpu")
-    dirname = os.path.dirname(__file__)
-    AI_path = os.path.join(dirname, '..','..','final_model', 'AI_weights.pth')
+    root_dir = os.path.dirname(os.path.dirname(current_dir))
+    AI_path = os.path.join(root_dir, 'final_model', 'AI_weights.pth')
     fen = sys.argv[1]
     board = chess.Board(fen)
     encoder = PlayEncoding()
@@ -26,17 +26,8 @@ if __name__ == "__main__":
     model = AI().to(device)
     model.load_state_dict(torch.load(AI_path,map_location=device))
     model.eval()
-
-    root_mcts=MCTSNode(1.0,None,board.turn,fen,model,encoder,decoder,verify,device)
-    run = RunMCTS(root_mcts,500).run()
-    final = run.state
-    move_played = None
-    for move in board.legal_moves:
-        board.push(move)
-        if board.fen() == final:
-            move_played = move
-            board.pop()
-            break
-        board.pop()
+    root_mcts=MCTSNode(1.0,None,board.turn,fen,model,encoder,decoder,verify,device,None)
+    best_node = RunMCTS(root_mcts,500).run()
+    move_played = best_node.move
     uci = move_played.uci()
     print(uci)
