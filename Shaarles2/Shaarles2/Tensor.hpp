@@ -8,9 +8,6 @@
 #include <random>
 
 
-__global__ void zero_kernel(float* data, int size);
-
-__global__ void one_kernel(float* data, int size);
 
 class Tensor {
 	//2D and 3D tensors are the only ones we need for our network

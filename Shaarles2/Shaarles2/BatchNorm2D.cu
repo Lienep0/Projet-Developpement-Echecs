@@ -1,3 +1,4 @@
+#pragma once
 #include "BatchNorm2D.hpp"
 
 //implementation of reduced batch mean, so we can use a bit of paralelization to speed up the process

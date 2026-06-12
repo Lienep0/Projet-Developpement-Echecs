@@ -10,7 +10,7 @@ enable_language(CUDA)
 
 # Source files
 set(SOURCES
-    bindings.cpp
+    bindings.cu
     Tensor.cu
     Module.cu
     Conv2D.cu
@@ -27,6 +27,9 @@ pybind11_add_module(ShAIrles MODULE ${SOURCES})
 set_target_properties(ShAIrles PROPERTIES
     CUDA_SEPARABLE_COMPILATION ON
     CUDA_ARCHITECTURES "native"
+
+    
+
 )
 
 target_link_libraries(ShAIrles PRIVATE cudart)

@@ -1,35 +1,28 @@
 #include <pybind11/pybind11.h>
 #include <pybind11/stl.h>
 
-#include "Module.cu"
-#include "Tensor.cu"
-#include "Conv2D.cu"
-#include "Linear.cu"
-#include "GeLU.cu"
-#include "SoftMax.cu"
-#include "BatchNorm2D.cu"
-#include "ReLU.cu"
+#include "Module.hpp"
+#include "Tensor.hpp"
+#include "Conv2D.hpp"
+#include "Linear.hpp"
+#include "GeLU.hpp"
+#include "SoftMax.hpp"
+#include "BatchNorm2D.hpp"
+#include "ReLU.hpp"
 
 namespace py = pybind11;
 
 PYBIND11_MODULE(ShAIrles, m) {
     m.doc() = "Mini deep learning library (C++/CUDA)";
 
-    // -------------------------
-    // Module (classe mère)
-    // -------------------------
-    py::class_<Module>(m, "Module")
-        .def("forward", &Module::forward)
-        .def("backward", &Module::backward)
-        .def("parameters", &Module::parameters);
 
     // -------------------------
     // Tensor
     // -------------------------
-    py::class_<Tensor, Module>(m, "Tensor")
+    py::class_<Tensor>(m, "Tensor")
         .def(py::init([](const std::vector<int>& dims) {
-            return Tensor(const_cast<int*>(dims.data()), static_cast<int>(dims.size()));
-        }))
+        return Tensor(const_cast<int*>(dims.data()), static_cast<int>(dims.size()));
+            }))
         .def(py::init<float*, int>())
         .def(py::init<>())
         .def("zero", &Tensor::zero)
@@ -39,18 +32,27 @@ PYBIND11_MODULE(ShAIrles, m) {
         .def("getNdim", &Tensor::getNdim)
         .def("getnbEle", &Tensor::getnbEle)
         .def("getDimensions", [](Tensor& t) {
-            std::vector<int> dims(t.getNdim());
-            for (int i = 0; i < t.getNdim(); ++i)
-                dims[i] = t.getDimensions()[i];
-            return dims;
-        })
+        std::vector<int> dims(t.getNdim());
+        for (int i = 0; i < t.getNdim(); ++i)
+            dims[i] = t.getDimensions()[i];
+        return dims;
+            })
         .def("getData", [](Tensor& t) {
-            std::vector<float> v(t.getnbEle());
-            float* d = t.getData();
-            for (int i = 0; i < t.getnbEle(); ++i)
-                v[i] = d[i];
-            return v;
-        });
+        std::vector<float> v(t.getnbEle());
+        float* d = t.getData();
+        for (int i = 0; i < t.getnbEle(); ++i)
+            v[i] = d[i];
+        return v;
+            });
+
+
+    // -------------------------
+    // Module (classe mère)
+    // -------------------------
+    py::class_<Module>(m, "Module")
+        .def("forward", &Module::forward)
+        .def("backward", &Module::backward)
+        .def("parameters", &Module::parameters);
 
     // -------------------------
     // Conv2D
@@ -69,6 +71,8 @@ PYBIND11_MODULE(ShAIrles, m) {
             py::arg("width"),
             py::arg("output"));
 
+
+    
     // -------------------------
     // Linear
     // -------------------------

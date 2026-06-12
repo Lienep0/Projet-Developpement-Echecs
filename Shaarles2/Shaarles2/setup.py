@@ -4,13 +4,22 @@ import pybind11
 import os
 
 sources = [
-    "bindings.cu",        # compilé par NVCC uniquement
+    
+    "bindings.cu",
+    "Module.cu",
+    "Tensor.cu",
+    "Conv2D.cu",
+    "Linear.cu",
+    "GeLU.cu",
+    "ReLU.cu",
+    "SoftMax.cu",
+    "BatchNorm2D.cu",        # compilé par NVCC uniquement
 ]
 
 setup(
     name="ShAIrles",
     version="0.1.0",
-    description="Mini deep learning library (C++/CUDA)",
+    description="Mini deep learning library (C++/CUDA) written by Shaarles",
     ext_modules=[
         CUDAExtension(
             name="ShAIrles",
@@ -33,6 +42,7 @@ setup(
                     "-Xcompiler", "/MD",
                     "-Xcompiler", "/EHsc",
                     "-arch=sm_75",   # adapte selon ta carte
+
                 ],
             },
             libraries=["cudart"],

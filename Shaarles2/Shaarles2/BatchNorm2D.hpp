@@ -6,22 +6,6 @@
 
 using namespace std;
 
-//implementation of reduced batch mean, so we can use a bit of paralelization to speed up the process
-
-__global__ void batch_mean_reduced(int num_features, float* input_data, float* batch_mean_data, int m, int B, int lasts);
-
-
-//implementation of reduced batch variance, so we can use a bit of paralelization to speed up the process
-__global__ void batch_var_reduced(int num_features, float* input_data, float* batch_var_data, float* batch_mean_data, int m, int B, int lasts);
-
-__global__ void normalization(int num_features, float* input_data, float* output_data, float* batch_mean_data,
-	float* batch_var_data, float* weights_data, float* bias_data, int B, int lasts);
-
-
-//updating the running mean
-__global__ void update_running_mean(int num_features, float* running_mean_data, float* batch_mean_data, float momentum);
-//updating the running variance
-__global__ void update_running_var(int num_features, float* running_var_data, float* batch_var_data, float momentum);
 
 class BatchNorm2D : public Module {
 

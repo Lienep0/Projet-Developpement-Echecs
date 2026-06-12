@@ -7,10 +7,6 @@
 using namespace std;
 
 
-//with padding and stride
-__global__ void conv2d(float* input, float* output, float* weights, float* bias, int in_channels, int out_channels, int kernel_height, int kernel_width, int input_width, int input_height, int stride, int padding, int out_Height, int out_Width);
-
-__global__ void conv2d_backward(float* input, float* gradOutput, float* weights, float* gradInput, float* gradWeights, float* gradBias, int in_channels, int out_channels, int kernel_height, int kernel_width, int input_width, int input_height, int stride, int padding, int out_Height, int out_Width);
 
 class Conv2D : public Module {
 private:

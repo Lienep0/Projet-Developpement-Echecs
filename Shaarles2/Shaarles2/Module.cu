@@ -1,5 +1,6 @@
+#pragma once
 #include "Module.hpp"
-
+#include "Tensor.cu"
 
 Tensor Module::forward(Tensor input) {
 	// Implement the forward pass using the weights and bias

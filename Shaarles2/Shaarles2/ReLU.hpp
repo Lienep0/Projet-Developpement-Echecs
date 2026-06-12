@@ -6,9 +6,6 @@
 using namespace std;
 
 
-__global__ void reluForwardKernel(float* input, float* output, float* mask, int size);
-
-__global__ void reluBackwardKernel(float* gradOutput, float* mask, float* gradInput, int size);
 class ReLU : public Module {
 private:
 	Tensor mask; //sert à stocker les mask pour la rétropagation

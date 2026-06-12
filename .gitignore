@@ -24,3 +24,7 @@ venv-chess-ai/
 .idea/
 /Shaarles2/Shaarles2/build
 /Shaarles2/.vs
+/Shaarles2/Shaarles2/main2.cu
+/Shaarles2/Shaarles2/main3Conv2dTest.cu
+/Shaarles2/Shaarles2/mainBatchNorm2dTest.cu
+/Shaarles2/Shaarles2/mainTestSoftMax.cu
