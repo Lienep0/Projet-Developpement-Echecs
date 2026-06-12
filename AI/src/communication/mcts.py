@@ -34,12 +34,8 @@ class RunMCTS:
                 choice = child
         return choice
 
-
-
-
-
 class MCTSNode:
-    def __init__(self, proba, parent, player, state,model,encoder,decoder,verify,device):
+    def __init__(self, proba, parent, player, state,model,encoder,decoder,verify,device,move):
         self.state = state #plateau format fen
         self.parent = parent
         self.children = []
@@ -54,6 +50,7 @@ class MCTSNode:
         self.verify = verify
         self.visited = False
         self.device = device
+        self.move = move
 
     def puct(self):
         if not self.sum_visits:
@@ -91,7 +88,7 @@ class MCTSNode:
                 new_board = board.copy()
                 new_board.push(move)
                 fen_move = new_board.fen()
-                self.children.append(MCTSNode(prob, self, game_player, fen_move, self.model, self.encoder, self.decoder, self.verify, self.device))
+                self.children.append(MCTSNode(prob, self, game_player, fen_move, self.model, self.encoder, self.decoder, self.verify, self.device, move))
         self.visited = True
         return result
 
@@ -111,3 +108,19 @@ class MCTSNode:
         self.sum_victory += value
         if self.parent:
             self.parent.backpropagate(1.0-value)
+    
+
+    def get_policy_vector(self):
+        policy = np.zeros(4672, dtype=np.float32)
+
+        total_visits = sum(child.sum_visits for child in self.children)
+
+        if total_visits == 0:
+            return policy
+        
+        board = chess.Board(self.state)
+
+        for child in self.children:
+            move_id = self.decoder.get_move_tensor_id(child.move,board)
+            policy[move_id] = child.sum_visits / total_visits
+        return policy
