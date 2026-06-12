@@ -2,6 +2,8 @@ import chess
 import numpy as np
 import torch
 
+
+#encodeur
 class PlayEncoding():
     
     def encode(self, fen):

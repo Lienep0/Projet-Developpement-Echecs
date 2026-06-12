@@ -1,5 +1,7 @@
 from torch import nn
 
+
+#création de l'IA
 class AI(nn.Module):
     def __init__(self, num=8):
         super().__init__()
@@ -25,7 +27,7 @@ class AI(nn.Module):
 
         return policy, value
         
-    
+#bloc résiduel
 class ResBlock(nn.Module):
     def __init__(self):
         super().__init__()
@@ -42,7 +44,7 @@ class ResBlock(nn.Module):
         x = self.gelu(x + xx)
         return x
 
-
+#bloc tête de valeur
 class OutBlockValueHead(nn.Module):
     def __init__(self):
         super().__init__()
@@ -64,7 +66,7 @@ class OutBlockValueHead(nn.Module):
         return x
 
 
-
+#bloc tête de politque
 class OutBlockPolicyHead(nn.Module):
     def __init__(self):
         super().__init__()

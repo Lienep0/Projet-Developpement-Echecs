@@ -16,7 +16,7 @@ from src.communication.play_encoding import PlayEncoding
 from src.communication.mcts import MCTSNode, RunMCTS
 
 
-
+#générer des parties par recherche Monte Carlo
 if __name__ == "__main__":
     dirname = os.path.dirname(__file__)
     device = torch.device("cuda" if torch.cuda.is_available() else "mps" if torch.backends.mps.is_available() else "cpu")

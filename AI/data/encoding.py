@@ -4,27 +4,26 @@ import chess.pgn
 import numpy as np
 
 
-#nb parties : 60145
 class TrainEncoding:
     def update_value_head(self, game, board):
         value=np.zeros((3), dtype=np.float32)
         result = game.headers.get("Result")
-        #victory
+
         if result == "1-0":
             value[0] = 1.0 
-        #defeat
+
         elif result == "0-1":
             value[2] = 1.0   
-        #draw
+
         else:
             value[1] = 1.0
-        #current player
+
         if board.turn == chess.BLACK:
             value = value[::-1].copy()
         return value 
 
 
-    #------------------------------------------------------------------------------------
+    #encodage des pièces avec gestion du côté
     def encode_pieces(self, board, entry, flip):
         
         piece_types = [
@@ -51,7 +50,7 @@ class TrainEncoding:
                 entry[i + 6, row, col] = 1.0
 
 
-
+    #analyse tactique
     def fill_tactical_analysis(self, value, board, flip):
         for square in chess.SQUARES:
             row, col = divmod(square, 8)
@@ -75,6 +74,7 @@ class TrainEncoding:
                     
         return value
 
+    #entrée réseau
     def update_entry(self, board):
         value = np.zeros((24, 8, 8), dtype=np.float32)
         flip = True if board.turn == chess.BLACK else False
@@ -155,8 +155,8 @@ class TrainEncoding:
                 return policy
 
         return policy
-    #------------------------------------------------------------------------------------
 
+    #créer fichier HDF5
     def create_hdf5_file(self, h5_path):
         with h5py.File(h5_path, 'w') as f:
             f.create_dataset("entry", shape=(0, 24, 8, 8), maxshape=(None, 24, 8, 8),  dtype='f4')
@@ -216,12 +216,7 @@ class TrainEncoding:
 
         return index
 
-
-
-
-
-
-
+    #itérer
     def iterate(self, h5_file,directory_path, limit):
         files = os.listdir(directory_path)
         index=0

@@ -12,7 +12,7 @@ from play_decoding import PlayDecoding
 from play_encoding import PlayEncoding
 from mcts import MCTSNode, RunMCTS
 
-
+#charger le modèle final et jouer
 if __name__ == "__main__":
     device = torch.device("cuda" if torch.cuda.is_available() else "mps" if torch.backends.mps.is_available() else "cpu")
     root_dir = os.path.dirname(os.path.dirname(current_dir))

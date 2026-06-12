@@ -2,16 +2,17 @@ import os
 import h5py
 import sys
 
-sys.path.append("..")
+current_dir = os.path.dirname(os.path.abspath(__file__))
+src_dir = os.path.dirname(current_dir)
+sys.path.append(src_dir)
 
-from alphazero.network import AI
-
+from alphazero.train_network import AI
 
 from torch import nn,optim
 import torch
 from torch.utils.data import TensorDataset, DataLoader
 
-
+#entraîner le poids choisi dur les données choisies, ici le modèle de préentraînement sur les données du TCEC
 def train(dataloaded,device,AI_path,epochs):
     model= AI().to(device)
     if os.path.exists(AI_path):

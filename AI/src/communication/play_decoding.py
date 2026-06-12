@@ -1,5 +1,7 @@
 import chess
 
+
+#décodeur
 class PlayDecoding():
     def __init__(self):
         self.index_to_move = {}
