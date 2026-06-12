@@ -86,73 +86,57 @@ __global__ void conv2d_backward(float* input, float* gradOutput, float* weights,
 	
 }
 
-class Conv2D : public Module {
-private:
-	int in_channels;
-	int out_channels;
-	int* kernel_size;
-
-	//No implementation of different size of stride and padding as Loukka uses int stride and padding
-	int stride;
-	int padding; 
-
-	//No dilation used as Loukka does not use it, but it can be added later if needed
-	Tensor bias;
-public:
-
-	Tensor weights;
-	Conv2D(int in_channels, int out_channels, int kernel_size, int stride, int padding) :
-		in_channels(in_channels), out_channels(out_channels), kernel_size(new int[2] {kernel_size, kernel_size}),
-		weights(new int[4] {out_channels, in_channels, this->kernel_size[0], this->kernel_size[1]}, 4),
-		bias(new int[1] {out_channels}, 1), stride(stride), padding(padding) {
-		//learn to initialize like this but I'm too lazy to change the initalization in like other classes, I'll try to do it here
-
-	}
-
-	void forward(Tensor& input, int batch_size,int height, int width, Tensor& output) {
-
-		int out_Height = 1 + (height - kernel_size[0] + 2 * padding) / stride;
-		int out_Width = 1 + (width - kernel_size[1] + 2 * padding) / stride;
 
 
-		dim3 block(16, 16, 1);
-		dim3 grid( (out_Width + block.x - 1) / block.x,  (out_Height + block.y - 1) / block.y, out_channels *batch_size	);
-		conv2d << <grid, block >> > (
-			input.getDevData(), output.getDevData(), weights.getDevData(), bias.getDevData(), in_channels, out_channels, kernel_size[0], kernel_size[1], input.getDimensions()[3], input.getDimensions()[2], stride, padding, out_Height, out_Width);
+Conv2D::Conv2D(int in_channels, int out_channels, int kernel_size, int stride, int padding) :
+	in_channels(in_channels), out_channels(out_channels), kernel_size(new int[2] {kernel_size, kernel_size}),
+	weights(new int[4] {out_channels, in_channels, this->kernel_size[0], this->kernel_size[1]}, 4),
+	bias(new int[1] {out_channels}, 1), stride(stride), padding(padding) {
+	//learn to initialize like this but I'm too lazy to change the initalization in like other classes, I'll try to do it here
 
-		cudaDeviceSynchronize();
+}
 
-		cudaMemcpy(output.getData(), output.getDevData(), output.getnbEle() * sizeof(float), cudaMemcpyDeviceToHost);
+void Conv2D::forward(Tensor& input, int batch_size,int height, int width, Tensor& output) {
 
-	}
+	int out_Height = 1 + (height - kernel_size[0] + 2 * padding) / stride;
+	int out_Width = 1 + (width - kernel_size[1] + 2 * padding) / stride;
 
-	void backward(Tensor& input, Tensor& gradOutput, Tensor& gradInput, Tensor& gradWeights, Tensor& gradBias, int batch_size, int height, int width){
-		// on suppose que gradInput, gradWeights, gradBias sont déjà alloués
-		// et initialisés à 0 (important pour les atomicAdd)
 
-		int out_Height = 1 + (height - kernel_size[0] + 2 * padding) / stride;
-		int out_Width = 1 + (width - kernel_size[1] + 2 * padding) / stride;
+	dim3 block(16, 16, 1);
+	dim3 grid( (out_Width + block.x - 1) / block.x,  (out_Height + block.y - 1) / block.y, out_channels *batch_size	);
+	conv2d << <grid, block >> > (input.getDevData(), output.getDevData(), weights.getDevData(), bias.getDevData(), in_channels, out_channels, kernel_size[0], kernel_size[1], input.getDimensions()[3], input.getDimensions()[2], stride, padding, out_Height, out_Width);
 
-		dim3 block(16, 16, 1);
-		dim3 grid((out_Width + block.x - 1)  / block.x,	(out_Height + block.y - 1) / block.y,out_channels * batch_size );
+	cudaDeviceSynchronize();
 
-		conv2d_backward << <grid, block >> > (input.getDevData(), gradOutput.getDevData(), weights.getDevData(), gradInput.getDevData(), gradWeights.getDevData(), gradBias.getDevData(), in_channels, out_channels,kernel_size[0], kernel_size[1],width, height,	stride, padding, out_Height, out_Width);
+	cudaMemcpy(output.getData(), output.getDevData(), output.getnbEle() * sizeof(float), cudaMemcpyDeviceToHost);
 
-		cudaDeviceSynchronize();
-	}
-	float* getWeights() {
-		return weights.getData();
-	}
+}
 
-	float* getBias() {
-		return bias.getData();
-	}
+void Conv2D::backward(Tensor& input, Tensor& gradOutput, Tensor& gradInput, Tensor& gradWeights, Tensor& gradBias, int batch_size, int height, int width) {
+	// on suppose que gradInput, gradWeights, gradBias sont déjà alloués
+	// et initialisés à 0 (important pour les atomicAdd)
 
-	float* getDevWeights() {
-		return weights.getDevData();
-	}
+	int out_Height = 1 + (height - kernel_size[0] + 2 * padding) / stride;
+	int out_Width = 1 + (width - kernel_size[1] + 2 * padding) / stride;
 
-	float* getDevBias() {
-		return bias.getDevData();
-	}
-};
+	dim3 block(16, 16, 1);
+	dim3 grid((out_Width + block.x - 1)  / block.x,	(out_Height + block.y - 1) / block.y,out_channels * batch_size );
+
+	conv2d_backward << <grid, block >> > (input.getDevData(), gradOutput.getDevData(), weights.getDevData(), gradInput.getDevData(), gradWeights.getDevData(), gradBias.getDevData(), in_channels, out_channels,kernel_size[0], kernel_size[1],width, height,	stride, padding, out_Height, out_Width);
+	cudaDeviceSynchronize();
+}
+float* Conv2D::getWeights() {
+	return weights.getData();
+}
+
+float* Conv2D::getBias() {
+	return bias.getData();
+}
+
+float* Conv2D::getDevWeights() {
+	return weights.getDevData();
+}
+
+float* Conv2D::getDevBias() {
+	return bias.getDevData();
+}

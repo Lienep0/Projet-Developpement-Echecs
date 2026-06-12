@@ -17,67 +17,61 @@ __global__ void addd(float* dev_data_a, float* dev_data_b, float* dev_data_resul
 	dev_data_result[threadIdx.x] = dev_data_a[threadIdx.x] + dev_data_b[threadIdx.x];
 }
 
-class Linear : public Module {
-private:
-	Tensor weights;
-public:
 
-	Tensor bias;
-	Linear(int input_size, int output_size) {
-		cout << "Initializing layer with input size " << input_size << " and output size " << output_size << endl;
-		int weights_dimension[] = { output_size, input_size };
-		int bias_dimension[] = { output_size };
+Linear::Linear(int input_size, int output_size) {
+	cout << "Initializing layer with input size " << input_size << " and output size " << output_size << endl;
+	int weights_dimension[] = { output_size, input_size };
+	int bias_dimension[] = { output_size };
 
 
-		this->weights = Tensor(weights_dimension, 2);
-		cout << "Initialized weights tensor :[" << weights.getDimensions()[0] << ", " << weights.getDimensions()[1] << "]" << endl;
+	this->weights = Tensor(weights_dimension, 2);
+	cout << "Initialized weights tensor :[" << weights.getDimensions()[0] << ", " << weights.getDimensions()[1] << "]" << endl;
 
-		this->bias = Tensor(bias_dimension, 1);
-	}
-
-
-	Linear() {
-		this->weights = Tensor();
-		this->bias = Tensor();
-	}
+	this->bias = Tensor(bias_dimension, 1);
+}
 
 
-	~Linear() {
-		//The tensors will be automatically freed when the layer is destroyed
-	}
+Linear::Linear() {
+	this->weights = Tensor();
+	this->bias = Tensor();
+}
+
+
+Linear::~Linear() {
+	//The tensors will be automatically freed when the layer is destroyed
+}
 
 
 
-	void forward(const Tensor& input, Tensor& output) {
-		cout << "device forward called with input dimensions: " << input.getDimensions()[0] << " and output dimensions: " << output.getDimensions()[0] << endl;
-		cout << output.getDimensions()[0] << " " << output.getNdim() << endl;
-		cout << bias.getDimensions()[0] << " " << bias.getNdim() << endl;
-		Tensor result(output.getDimensions(), output.getNdim());
-		cout << "Launching kernel with " << this->weights.getDimensions()[0] << " threads" << endl;
-		multiply21 << <1, bias.getDimensions()[0] >> > (weights.getDevData(), input.getDevData(), result.getDevData(), weights.getDimensions()[1], weights.getStrides()[0], weights.getStrides()[1], bias.getStrides()[0]);
-		cudaDeviceSynchronize();
-		cout << "Finished multiplying, now adding bias" << endl;
-		addd << <1, bias.getDimensions()[0] >> > (result.getDevData(), this->bias.getDevData(), output.getDevData());
-		cudaDeviceSynchronize();
+void Linear::forward(const Tensor& input, Tensor& output) {
+	cout << "device forward called with input dimensions: " << input.getDimensions()[0] << " and output dimensions: " << output.getDimensions()[0] << endl;
+	cout << output.getDimensions()[0] << " " << output.getNdim() << endl;
+	cout << bias.getDimensions()[0] << " " << bias.getNdim() << endl;
+	Tensor result(output.getDimensions(), output.getNdim());
+	cout << "Launching kernel with " << this->weights.getDimensions()[0] << " threads" << endl;
+	multiply21 << <1, bias.getDimensions()[0] >> > (weights.getDevData(), input.getDevData(), result.getDevData(), weights.getDimensions()[1], weights.getStrides()[0], weights.getStrides()[1], bias.getStrides()[0]);
+	cudaDeviceSynchronize();
+	cout << "Finished multiplying, now adding bias" << endl;
+	addd << <1, bias.getDimensions()[0] >> > (result.getDevData(), this->bias.getDevData(), output.getDevData());
+	cudaDeviceSynchronize();
 
-		cudaMemcpy(output.getData(), output.getDevData(), output.getnbEle() * sizeof(float), cudaMemcpyDeviceToHost);
-	}
+	cudaMemcpy(output.getData(), output.getDevData(), output.getnbEle() * sizeof(float), cudaMemcpyDeviceToHost);
+}
 
-	void gradW(const Tensor& input, const Tensor& grad_output, Tensor& grad_weights) {
+void Linear::gradW(const Tensor& input, const Tensor& grad_output, Tensor& grad_weights) {
 
-	}
+}
 
-	void gradB(const Tensor& input, const Tensor& grad_output, Tensor& grad_bias) {
+void Linear::gradB(const Tensor& input, const Tensor& grad_output, Tensor& grad_bias) {
 
-	}
+}
 
-	void gradI(const Tensor& input, const Tensor& grad_output, Tensor& grad_input) {
+void Linear::gradI(const Tensor& input, const Tensor& grad_output, Tensor& grad_input) {
 
-	}
+}
 
-	void backward(const Tensor& input, const Tensor& grad_output, Tensor& grad_input) {
+void Linear::backward(const Tensor& input, const Tensor& grad_output, Tensor& grad_input) {
 
-	}
+}
 
 
-};
