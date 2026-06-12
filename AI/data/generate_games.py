@@ -36,23 +36,23 @@ if __name__ == "__main__":
     model.eval()
     verify = Verify()
 
-    iterations = 10
+    iterations = 5
 
     with h5py.File(h5_path, 'a') as f:
         global_index = f['entry'].shape[0]
-        value_heads = []
-        entries = []
-        policy_heads = []
-        for iteration in range(iterations):
 
+        for iteration in range(iterations):
+            value_heads = []
+            entries = []
+            policy_heads = []
             board = chess.Board(start)
             root = MCTSNode(1.0, None, board.turn, board.fen(), model, encoder, decoder, verify, device,None)
             while not board.is_game_over():
-                run_mcts = RunMCTS(root, iterations=800)
+                run_mcts = RunMCTS(root, 1)
                 best_node = run_mcts.run()
             
                 entries.append(encoder.encode(board.fen()).numpy())
-                policy_heads.append(root.get_policy_vector())
+                policy_heads.append(root.get_policy_vector().reshape(73, 8, 8))
                 
                 board.push(best_node.move)
 
@@ -62,16 +62,16 @@ if __name__ == "__main__":
 
             result = board.result()
             if result == "1-0":
-                final_value=1.0
+                final_value=[1.0, 0.0, 0.0]
             elif result == "0-1":
-                final_value=0.0
+                final_value=[0.0, 0.0, 1.0]
             else:
-                final_value=0.5
+                final_value=[0.0, 1.0, 0.0]
             for _ in range(len(entries)):
                 value_heads.append(final_value)
-                final_value = 1.0 - final_value
+                final_value = final_value[::-1]
             
-        train_encoder.save_position(f, global_index, entries, policy_heads, value_heads, len(entries))
+            global_index = train_encoder.save_position(f, global_index, entries, policy_heads, value_heads, len(entries))
 
 
 
